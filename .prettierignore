@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+pnpm-lock.yaml
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Coverage
+coverage/
+
+# Package files
+*.tgz
+
+# Lock files
+pnpm-lock.yaml
+package-lock.json
+yarn.lock

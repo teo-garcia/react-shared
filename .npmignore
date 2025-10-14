@@ -1,0 +1,22 @@
+# Source files (only ship compiled code)
+src/
+tsconfig.json
+.prettierignore
+
+# Development files
+.github/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# CI/CD
+.github/
+
+# IDE
+.vscode/
+.idea/
+
+# Misc
+.DS_Store
+*.log
