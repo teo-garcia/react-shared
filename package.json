@@ -1,0 +1,112 @@
+{
+  "name": "@teo-garcia/react-shared",
+  "version": "0.1.0",
+  "description": "Shared React components, hooks, utilities, and adapters for fullstack web templates",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./components": {
+      "import": "./dist/components/index.js",
+      "types": "./dist/components/index.d.ts"
+    },
+    "./components/theme-switch": {
+      "import": "./dist/components/theme-switch/index.js",
+      "types": "./dist/components/theme-switch/index.d.ts"
+    },
+    "./components/viewport-info": {
+      "import": "./dist/components/viewport-info/index.js",
+      "types": "./dist/components/viewport-info/index.d.ts"
+    },
+    "./components/error-boundary": {
+      "import": "./dist/components/error-boundary/index.js",
+      "types": "./dist/components/error-boundary/index.d.ts"
+    },
+    "./hooks": {
+      "import": "./dist/hooks/index.js",
+      "types": "./dist/hooks/index.d.ts"
+    },
+    "./hooks/use-healthcheck": {
+      "import": "./dist/hooks/use-healthcheck.js",
+      "types": "./dist/hooks/use-healthcheck.d.ts"
+    },
+    "./utils": {
+      "import": "./dist/utils/index.js",
+      "types": "./dist/utils/index.d.ts"
+    },
+    "./utils/environment": {
+      "import": "./dist/utils/environment.js",
+      "types": "./dist/utils/environment.d.ts"
+    },
+    "./utils/msw": {
+      "import": "./dist/utils/msw.js",
+      "types": "./dist/utils/msw.d.ts"
+    },
+    "./adapters": {
+      "import": "./dist/adapters/index.js",
+      "types": "./dist/adapters/index.d.ts"
+    },
+    "./adapters/theme": {
+      "import": "./dist/adapters/theme/index.js",
+      "types": "./dist/adapters/theme/index.d.ts"
+    },
+    "./adapters/environment": {
+      "import": "./dist/adapters/environment/index.js",
+      "types": "./dist/adapters/environment/index.d.ts"
+    },
+    "./types": {
+      "import": "./dist/types.js",
+      "types": "./dist/types.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "react",
+    "components",
+    "hooks",
+    "utilities",
+    "shared",
+    "typescript",
+    "nextjs",
+    "react-router"
+  ],
+  "author": "teo-garcia",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "peerDependencies": {
+    "lucide-react": "^0.400.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "lucide-react": {
+      "optional": false
+    }
+  },
+  "devDependencies": {
+    "@tanstack/react-query": "^5.0.0",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "msw": "^2.0.0",
+    "next-themes": "^0.4.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepublishOnly": "pnpm build"
+  }
+}
