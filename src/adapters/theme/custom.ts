@@ -35,3 +35,6 @@ export const createCustomThemeAdapter = (themeHookResult: CustomThemeHook): Them
     setTheme: themeHookResult.setTheme,
   }
 }
+
+
+

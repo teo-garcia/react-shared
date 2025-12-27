@@ -5,5 +5,5 @@
  * environment detection systems, and other framework-specific APIs
  */
 
-export * from './environment'
-export * from './theme'
+export * from './environment/index.js'
+export * from './theme/index.js'

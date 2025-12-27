@@ -2,5 +2,5 @@
  * Theme adapters - bridge between different theme libraries and our components
  */
 
-export { createCustomThemeAdapter } from './custom'
-export { useNextThemesAdapter } from './next-themes'
+export { createCustomThemeAdapter } from './custom.js'
+export { useNextThemesAdapter } from './next-themes.js'

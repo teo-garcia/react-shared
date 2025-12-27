@@ -2,5 +2,5 @@
  * Utilities - Pure functions and helpers
  */
 
-export * from './environment'
-export * from './msw'
+export * from './environment.js'
+export * from './msw.js'

@@ -1,2 +1,2 @@
-export { ViewportInfo } from './viewport-info'
-export type { ViewportInfoProps } from './viewport-info'
+export { ViewportInfo } from './viewport-info.js'
+export type { ViewportInfoProps } from './viewport-info.js'

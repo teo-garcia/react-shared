@@ -1,2 +1,2 @@
-export { ThemeSwitch } from './theme-switch'
-export type { ThemeSwitchProps } from './theme-switch'
+export { ThemeSwitch } from './theme-switch.js'
+export type { ThemeSwitchProps } from './theme-switch.js'

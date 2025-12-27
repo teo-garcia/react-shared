@@ -94,3 +94,6 @@ export const ThemeSwitch = ({ themeAdapter }: ThemeSwitchProps) => {
     </button>
   )
 }
+
+
+
