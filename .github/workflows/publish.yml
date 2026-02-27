@@ -36,7 +36,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ""
           NPM_TOKEN: ""
-        run: pnpm publish --provenance --access public --no-git-checks
+        run: npm publish --provenance --access public
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
