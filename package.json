@@ -1,6 +1,6 @@
 {
   "name": "@teo-garcia/react-shared",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Shared React components, hooks, utilities, and adapters for fullstack web templates",
   "type": "module",
   "main": "./dist/index.js",
