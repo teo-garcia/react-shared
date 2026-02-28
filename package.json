@@ -85,7 +85,7 @@
     "url": "git+https://github.com/teo-garcia/react-shared.git"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "peerDependencies": {
     "lucide-react": "^0.400.0",
