@@ -1,6 +1,6 @@
 {
   "name": "@teo-garcia/react-shared",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Shared React components, hooks, utilities, and adapters for fullstack web templates",
   "type": "module",
   "main": "./dist/index.js",
@@ -80,6 +80,10 @@
   ],
   "author": "teo-garcia",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teo-garcia/react-shared.git"
+  },
   "engines": {
     "node": ">=20"
   },
