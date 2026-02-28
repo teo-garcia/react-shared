@@ -32,6 +32,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
+      - name: Security audit
+        run: pnpm audit --audit-level=high
+        continue-on-error: true
+
       - name: Build package
         run: pnpm build
 
