@@ -84,6 +84,7 @@
     "type": "git",
     "url": "git+https://github.com/teo-garcia/react-shared.git"
   },
+  "packageManager": "pnpm@10.2.0",
   "engines": {
     "node": ">=24"
   },
