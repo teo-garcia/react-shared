@@ -110,6 +110,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "check": "pnpm format:check && pnpm build",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepublishOnly": "pnpm build"
