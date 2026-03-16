@@ -81,10 +81,7 @@ export function HealthStatus() {
 ### Utilities
 
 ```tsx
-import {
-  isClient,
-  isDevelopment,
-} from '@teo-garcia/react-shared/utils'
+import { isClient, isDevelopment } from '@teo-garcia/react-shared/utils'
 
 if (isDevelopment()) {
   console.log('Running in dev mode')
@@ -108,13 +105,13 @@ export function App() {
 
 ## Exports
 
-| Export | Description |
-| ------ | ----------- |
-| `@teo-garcia/react-shared/components` | Shared React UI components |
-| `@teo-garcia/react-shared/hooks` | Shared React hooks |
-| `@teo-garcia/react-shared/utils` | Framework-agnostic utilities |
-| `@teo-garcia/react-shared/adapters/theme` | Theme adapters |
-| `@teo-garcia/react-shared/adapters/environment` | Environment adapters |
+| Export                                          | Description                  |
+| ----------------------------------------------- | ---------------------------- |
+| `@teo-garcia/react-shared/components`           | Shared React UI components   |
+| `@teo-garcia/react-shared/hooks`                | Shared React hooks           |
+| `@teo-garcia/react-shared/utils`                | Framework-agnostic utilities |
+| `@teo-garcia/react-shared/adapters/theme`       | Theme adapters               |
+| `@teo-garcia/react-shared/adapters/environment` | Environment adapters         |
 
 ## Included APIs
 

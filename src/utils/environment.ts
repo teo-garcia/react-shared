@@ -22,7 +22,10 @@
  */
 export const isDevelopment = (): boolean => {
   // Check process.env first (Next.js, Node.js)
-  if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
+  if (
+    typeof process !== 'undefined' &&
+    process.env?.NODE_ENV === 'development'
+  ) {
     return true
   }
 
@@ -90,6 +93,3 @@ export const isServer = (): boolean => {
 export const isClient = (): boolean => {
   return !isServer()
 }
-
-
-

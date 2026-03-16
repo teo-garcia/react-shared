@@ -21,6 +21,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.0.0
         version: 5.90.3(react@19.2.0)
+      '@teo-garcia/prettier-config-shared':
+        specifier: ^0.2.9
+        version: 0.2.9(prettier@3.6.2)
       '@types/node':
         specifier: ^24.0.0
         version: 24.7.2
@@ -100,6 +103,12 @@ packages:
     resolution: {integrity: sha512-i/LRL6DtuhG6bjGzavIMIVuKKPWx2AnEBIsBfuMm3YoHne0a20nWmsatOCBcVSaT0/8/5YFjNkebHAPLVUSi0Q==}
     peerDependencies:
       react: ^18 || ^19
+
+  '@teo-garcia/prettier-config-shared@0.2.9':
+    resolution: {integrity: sha512-G1X4yBPxe+Fn1XBB9N+6DPZM+0+n+Ec1ofoXcAbqfzOPaDdJKo7LAzhf87HiWyfSbMzgclJDyvAhO4fWQ2LPrQ==}
+    engines: {node: '>=24'}
+    peerDependencies:
+      prettier: ^3.0.0
 
   '@types/node@24.7.2':
     resolution: {integrity: sha512-/NbVmcGTP+lj5oa4yiYxxeBjRivKQ5Ns1eSZeB99ExsEQ6rX5XYU1Zy/gGxY/ilqtD4Etx9mKyrPxZRetiahhA==}
@@ -351,6 +360,10 @@ snapshots:
     dependencies:
       '@tanstack/query-core': 5.90.3
       react: 19.2.0
+
+  '@teo-garcia/prettier-config-shared@0.2.9(prettier@3.6.2)':
+    dependencies:
+      prettier: 3.6.2
 
   '@types/node@24.7.2':
     dependencies:

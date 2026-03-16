@@ -45,10 +45,11 @@ export interface ViewportInfoProps {
  */
 export const ViewportInfo = ({ environmentAdapter }: ViewportInfoProps) => {
   // State to track viewport dimensions
-  const [{ width: viewportWidth, height: viewportHeight }, setViewportSize] = useState(() => ({
-    width: 0,
-    height: 0,
-  }))
+  const [{ width: viewportWidth, height: viewportHeight }, setViewportSize] =
+    useState(() => ({
+      width: 0,
+      height: 0,
+    }))
 
   useEffect(() => {
     // Guard against SSR - window is not available on the server
@@ -80,21 +81,18 @@ export const ViewportInfo = ({ environmentAdapter }: ViewportInfoProps) => {
   if (!environmentAdapter.isDevelopment()) return null
 
   return (
-    <aside className="fixed bottom-0 right-0 flex items-center gap-x-1 rounded-l-lg px-4 py-2 bg-primary text-primary-foreground font-semibold">
-      <RulerIcon className="size-5" />
-      <p className="text-lg flex gap-x-2">
+    <aside className='fixed bottom-0 right-0 flex items-center gap-x-1 rounded-l-lg px-4 py-2 bg-primary text-primary-foreground font-semibold'>
+      <RulerIcon className='size-5' />
+      <p className='text-lg flex gap-x-2'>
         {viewportWidth}px - {viewportHeight}px -
         {/* Display active Tailwind breakpoint using responsive classes */}
-        <span className="inline sm:hidden font-semibold">default</span>
-        <span className="hidden sm:inline md:hidden font-semibold">sm</span>
-        <span className="hidden md:inline lg:hidden font-semibold">md</span>
-        <span className="hidden lg:inline xl:hidden font-semibold">lg </span>
-        <span className="hidden xl:inline 2xl:hidden font-semibold">xl</span>
-        <span className="hidden 2xl:inline font-semibold">2xl</span>
+        <span className='inline sm:hidden font-semibold'>default</span>
+        <span className='hidden sm:inline md:hidden font-semibold'>sm</span>
+        <span className='hidden md:inline lg:hidden font-semibold'>md</span>
+        <span className='hidden lg:inline xl:hidden font-semibold'>lg </span>
+        <span className='hidden xl:inline 2xl:hidden font-semibold'>xl</span>
+        <span className='hidden 2xl:inline font-semibold'>2xl</span>
       </p>
     </aside>
   )
 }
-
-
-

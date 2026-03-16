@@ -74,6 +74,3 @@ export const setupMSWServer = async (
 
   return server
 }
-
-
-

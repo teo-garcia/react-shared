@@ -42,7 +42,8 @@ export interface UseHealthcheckOptions {
  * ```
  */
 export const useHealthcheck = (options: UseHealthcheckOptions = {}) => {
-  const { url = 'http://localhost:3000/api/healthcheck', enabled = true } = options
+  const { url = 'http://localhost:3000/api/healthcheck', enabled = true } =
+    options
 
   return useQuery({
     queryKey: ['healthcheck', url],
@@ -60,6 +61,3 @@ export const useHealthcheck = (options: UseHealthcheckOptions = {}) => {
     retry: 3,
   })
 }
-
-
-

@@ -40,6 +40,3 @@ export interface ErrorBoundaryProps {
   /** Optional callback when an error is caught */
   onError?: (error: Error, errorInfo: React.ErrorInfo) => void
 }
-
-
-

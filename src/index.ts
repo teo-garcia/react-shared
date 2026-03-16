@@ -1,11 +1,11 @@
 /**
  * @teo-garcia/react-shared
- * 
+ *
  * Shared React components, hooks, utilities, and adapters for fullstack web templates.
- * 
+ *
  * This package provides framework-agnostic React utilities that work across
  * Next.js, React Router, and other React-based frameworks.
- * 
+ *
  * @packageDocumentation
  */
 

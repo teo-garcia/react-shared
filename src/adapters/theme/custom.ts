@@ -29,12 +29,11 @@ interface CustomThemeHook {
  * }
  * ```
  */
-export const createCustomThemeAdapter = (themeHookResult: CustomThemeHook): ThemeAdapter => {
+export const createCustomThemeAdapter = (
+  themeHookResult: CustomThemeHook
+): ThemeAdapter => {
   return {
     theme: themeHookResult.theme,
     setTheme: themeHookResult.setTheme,
   }
 }
-
-
-

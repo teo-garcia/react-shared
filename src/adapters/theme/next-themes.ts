@@ -25,6 +25,3 @@ export const useNextThemesAdapter = (): ThemeAdapter => {
     setTheme: (newTheme: ThemeMode) => setTheme(newTheme),
   }
 }
-
-
-

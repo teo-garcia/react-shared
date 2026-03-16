@@ -84,6 +84,7 @@
     "type": "git",
     "url": "git+https://github.com/teo-garcia/react-shared.git"
   },
+  "prettier": "@teo-garcia/prettier-config-shared",
   "packageManager": "pnpm@10.2.0",
   "engines": {
     "node": ">=24"
@@ -99,6 +100,7 @@
     }
   },
   "devDependencies": {
+    "@teo-garcia/prettier-config-shared": "^0.2.9",
     "@tanstack/react-query": "^5.0.0",
     "@types/node": "^24.0.0",
     "@types/react": "^19.0.0",

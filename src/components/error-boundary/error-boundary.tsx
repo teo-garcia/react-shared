@@ -58,7 +58,10 @@ interface ErrorBoundaryState {
  * }
  * ```
  */
-export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props)
     this.state = { hasError: false, error: null }
@@ -101,7 +104,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       // Default fallback UI if none provided
       return (
         <div
-          role="alert"
+          role='alert'
           style={{
             padding: '20px',
             margin: '20px',
@@ -113,7 +116,9 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         >
           <h2 style={{ marginTop: 0 }}>Something went wrong</h2>
           <details style={{ whiteSpace: 'pre-wrap' }}>
-            <summary style={{ cursor: 'pointer', marginBottom: '10px' }}>Error details</summary>
+            <summary style={{ cursor: 'pointer', marginBottom: '10px' }}>
+              Error details
+            </summary>
             {this.state.error.toString()}
           </details>
         </div>
@@ -124,6 +129,3 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     return this.props.children
   }
 }
-
-
-
