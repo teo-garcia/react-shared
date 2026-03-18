@@ -5,6 +5,10 @@ on:
     tags:
       - "v*"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -24,18 +28,11 @@ jobs:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
 
-      - name: Setup npm for Trusted Publishing
-        run: npm install -g npm@latest && npm --version
-
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
-      - name: Security audit
-        run: pnpm audit --audit-level=high
-        continue-on-error: true
-
-      - name: Build package
-        run: pnpm build
+      - name: Check package
+        run: pnpm check
 
       - name: Publish to npm via OIDC
         run: npm publish --provenance --access public
