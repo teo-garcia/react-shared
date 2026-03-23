@@ -2,7 +2,7 @@
 
 # @teo-garcia/react-shared
 
-**Shared React hooks, utilities, and test helpers for fullstack web templates**
+**Shared React hooks, utilities, and components for fullstack web templates**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![npm](https://img.shields.io/npm/v/@teo-garcia/react-shared?color=blue)](https://www.npmjs.com/package/@teo-garcia/react-shared)
@@ -15,20 +15,11 @@ ecosystem
 
 ---
 
-## Features
-
-| Area           | Includes                                                                               |
-| -------------- | -------------------------------------------------------------------------------------- |
-| **Hooks**      | `useDebounce`, `useLocalStorage`, `useMediaQuery`, `useOnClickOutside`, `usePrevious`, `useIsomorphicLayoutEffect` |
-| **Components** | `ErrorBoundary`                                                                        |
-| **Utilities**  | `cn` — Tailwind-aware class merging (`clsx` + `tailwind-merge`)                        |
-| **Test utils** | `createWrapper`, `renderWithProviders` — QueryClient wrappers for Vitest               |
-
 ## Requirements
 
 - React 19+
 - TypeScript
-- Tailwind CSS (for consuming apps using `cn` or components)
+- Tailwind CSS in the consuming app (for `Skeleton` and `cn`)
 
 ## Installation
 
@@ -42,106 +33,152 @@ pnpm add @tanstack/react-query
 pnpm add -D @testing-library/react
 ```
 
-## Exports
+---
 
-| Path                                            | Description                         |
-| ----------------------------------------------- | ----------------------------------- |
-| `@teo-garcia/react-shared/hooks/use-debounce`            | Debounce a value by delay (ms)     |
-| `@teo-garcia/react-shared/hooks/use-local-storage`       | SSR-safe localStorage state hook   |
-| `@teo-garcia/react-shared/hooks/use-media-query`         | SSR-safe CSS media query hook      |
-| `@teo-garcia/react-shared/hooks/use-on-click-outside`    | Click/touch outside a ref          |
-| `@teo-garcia/react-shared/hooks/use-previous`            | Previous value of a state/prop     |
-| `@teo-garcia/react-shared/hooks/use-isomorphic-layout-effect` | `useLayoutEffect` on client, `useEffect` on server |
-| `@teo-garcia/react-shared/components/error-boundary`     | React error boundary component     |
-| `@teo-garcia/react-shared/utils/cn`                      | Tailwind class merging utility     |
-| `@teo-garcia/react-shared/test-utils`                    | QueryClient wrappers for tests     |
+## Hooks
 
-## Usage
+All hooks are framework-agnostic and SSR-safe.
 
-### Hooks
+| Hook                              | Description                                                                                    |
+| --------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `useDebounce(value, delay)`       | Returns a debounced copy of `value` that updates after `delay` ms of inactivity                |
+| `useLocalStorage(key, initial)`   | `localStorage`-backed state as a tuple `[value, set, remove]`. Returns `initial` on the server |
+| `useMediaQuery(query)`            | Tracks a CSS media query. Returns `false` on the server                                        |
+| `useOnClickOutside(ref, handler)` | Fires `handler` on `mousedown`/`touchstart` outside the given ref                              |
+| `usePrevious(value)`              | Returns the previous render's value of a state or prop                                         |
+| `useIsomorphicLayoutEffect`       | `useLayoutEffect` on the client, `useEffect` on the server — eliminates SSR warnings           |
 
-```tsx
-import { useDebounce } from '@teo-garcia/react-shared/hooks/use-debounce'
-import { useLocalStorage } from '@teo-garcia/react-shared/hooks/use-local-storage'
-import { useMediaQuery } from '@teo-garcia/react-shared/hooks/use-media-query'
-import { useOnClickOutside } from '@teo-garcia/react-shared/hooks/use-on-click-outside'
-import { usePrevious } from '@teo-garcia/react-shared/hooks/use-previous'
+Import paths: `@teo-garcia/react-shared/hooks/<hook-name>`
 
-function SearchInput() {
-  const [query, setQuery] = useState('')
-  const debouncedQuery = useDebounce(query, 300)
-  // debouncedQuery updates 300ms after the user stops typing
-}
+---
 
-function ThemeToggle() {
-  const [theme, setTheme, removeTheme] = useLocalStorage('theme', 'light')
-  // SSR-safe: returns 'light' when window is undefined
-}
+## Components
 
-function Sidebar() {
-  const isDesktop = useMediaQuery('(min-width: 1024px)')
-  // SSR-safe: returns false on the server
-}
+### `ErrorBoundary`
 
-function Dropdown({ onClose }: { onClose: () => void }) {
-  const ref = useRef<HTMLDivElement>(null)
-  useOnClickOutside(ref, onClose)
-  return <div ref={ref}>...</div>
-}
+Catches thrown errors in child trees and renders a fallback. Supports four
+fallback patterns, auto-reset on prop changes, and focus-restoring "Try again"
+in the default UI.
 
-function Counter({ value }: { value: number }) {
-  const previous = usePrevious(value)
-  return <div>Changed from {previous} to {value}</div>
-}
-```
+| Prop                | Type                                          | Description                                                            |
+| ------------------- | --------------------------------------------- | ---------------------------------------------------------------------- |
+| `FallbackComponent` | `ComponentType<{ error, resetError }>`        | Highest-priority fallback — receives the error and a reset callback    |
+| `fallbackRender`    | `(props: { error, resetError }) => ReactNode` | Render-prop fallback                                                   |
+| `fallback`          | `ReactNode \| (error) => ReactNode`           | Static element or function fallback                                    |
+| `resetKeys`         | `unknown[]`                                   | When any value in the array changes, the boundary resets automatically |
+| `onError`           | `(error, errorInfo) => void`                  | Called after every caught error — use for logging or tracking          |
+| `onReset`           | `() => void`                                  | Called whenever the boundary resets                                    |
 
-### ErrorBoundary
+Import path: `@teo-garcia/react-shared/components/error-boundary`
 
-```tsx
-import { ErrorBoundary } from '@teo-garcia/react-shared/components/error-boundary'
+---
 
-export function App() {
-  return (
-    <ErrorBoundary fallback={<div>Something went wrong</div>}>
-      <MyComponent />
-    </ErrorBoundary>
-  )
-}
-```
+### `VisuallyHidden`
 
-### cn utility
+Renders content that is invisible on screen but fully accessible to assistive
+technologies. Zero dependencies, RSC-safe, no Tailwind required.
 
-```tsx
-import { cn } from '@teo-garcia/react-shared/utils/cn'
+Use for: icon-only button labels, skip-navigation links, form hints,
+screen-reader-only status messages.
 
-// Merges Tailwind classes — later classes win on conflict
-cn('p-4 text-sm', condition && 'text-lg', 'p-2')
-// → 'text-lg p-2'  (p-4 overridden by p-2, text-sm by text-lg)
-```
+Import path: `@teo-garcia/react-shared/components/visually-hidden`
 
-### Test utilities
+---
 
-```tsx
-import { createWrapper, renderWithProviders } from '@teo-garcia/react-shared/test-utils'
+### `Skeleton`
 
-// createWrapper: creates a QueryClientProvider wrapper (use at module level, not inside components)
-const Wrapper = createWrapper()
+A single-line loading placeholder using Tailwind's `animate-pulse`. Accepts
+`className` for sizing so it adapts to any layout without wrapper divs.
 
-test('my component', () => {
-  render(<MyComponent />, { wrapper: Wrapper })
-})
+Use for: card skeletons, text line placeholders, avatar placeholders, table row
+stubs.
 
-// renderWithProviders: convenience wrapper that creates the provider for you
-test('my component', () => {
-  renderWithProviders(<MyComponent />)
-})
+Import path: `@teo-garcia/react-shared/components/skeleton`
 
-// Custom QueryClient
-import { QueryClient } from '@tanstack/react-query'
-const Wrapper = createWrapper({ queryClient: new QueryClient({ ... }) })
-```
+---
 
-## Related Packages
+### `Portal`
+
+Renders children into a target DOM node outside the React tree via
+`createPortal`. SSR-safe — returns `null` until mounted. Treats
+`container={null}` as "not ready" and defers rendering, which pairs cleanly with
+`useRef`.
+
+Use for: modals, drawers, tooltips, toasts — anything that must escape
+`overflow: hidden` or stacking context.
+
+Import path: `@teo-garcia/react-shared/components/portal`
+
+---
+
+### `FocusTrap`
+
+Traps keyboard focus within its container while `active`. Tab wraps from last to
+first element; Shift+Tab wraps from first to last. Restores focus to the
+previously focused element on deactivation or unmount.
+
+Use for: modals, dialogs, drawers, dropdowns — any overlay where focus must not
+escape.
+
+| Prop           | Type      | Default | Description                                     |
+| -------------- | --------- | ------- | ----------------------------------------------- |
+| `active`       | `boolean` | `true`  | Enables or disables the trap                    |
+| `initialFocus` | `boolean` | `true`  | Focuses the first focusable child on activation |
+
+Import path: `@teo-garcia/react-shared/components/focus-trap`
+
+---
+
+## Utilities
+
+### `cn`
+
+Merges Tailwind class names with conflict resolution — later classes win. Built
+on `clsx` + `tailwind-merge`.
+
+Import path: `@teo-garcia/react-shared/utils/cn`
+
+---
+
+## Test utilities
+
+Helpers for wrapping components under test with a `QueryClient` provider.
+
+| Export                              | Description                                                                                        |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `createWrapper(options?)`           | Returns a `QueryClientProvider` wrapper component. Create at module level, not inside render calls |
+| `renderWithProviders(ui, options?)` | Convenience wrapper around `@testing-library/react` `render` with `createWrapper` pre-applied      |
+
+Accepts an optional `queryClient` in options to inject a custom client (useful
+for testing query state).
+
+Import path: `@teo-garcia/react-shared/test-utils`
+
+---
+
+## All export paths
+
+| Path                                                          | Contents                               |
+| ------------------------------------------------------------- | -------------------------------------- |
+| `@teo-garcia/react-shared/components`                         | All components (barrel)                |
+| `@teo-garcia/react-shared/components/error-boundary`          | `ErrorBoundary`, `FallbackProps`       |
+| `@teo-garcia/react-shared/components/focus-trap`              | `FocusTrap`                            |
+| `@teo-garcia/react-shared/components/portal`                  | `Portal`                               |
+| `@teo-garcia/react-shared/components/skeleton`                | `Skeleton`                             |
+| `@teo-garcia/react-shared/components/visually-hidden`         | `VisuallyHidden`                       |
+| `@teo-garcia/react-shared/hooks`                              | All hooks (barrel)                     |
+| `@teo-garcia/react-shared/hooks/use-debounce`                 | `useDebounce`                          |
+| `@teo-garcia/react-shared/hooks/use-isomorphic-layout-effect` | `useIsomorphicLayoutEffect`            |
+| `@teo-garcia/react-shared/hooks/use-local-storage`            | `useLocalStorage`                      |
+| `@teo-garcia/react-shared/hooks/use-media-query`              | `useMediaQuery`                        |
+| `@teo-garcia/react-shared/hooks/use-on-click-outside`         | `useOnClickOutside`                    |
+| `@teo-garcia/react-shared/hooks/use-previous`                 | `usePrevious`                          |
+| `@teo-garcia/react-shared/utils/cn`                           | `cn`                                   |
+| `@teo-garcia/react-shared/test-utils`                         | `createWrapper`, `renderWithProviders` |
+
+---
+
+## Related packages
 
 | Package                                                                                    | Description         |
 | ------------------------------------------------------------------------------------------ | ------------------- |

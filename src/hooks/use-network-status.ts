@@ -1,0 +1,30 @@
+import { useEffect, useState } from 'react'
+
+interface NetworkStatus {
+  online: boolean
+}
+
+/**
+ * Tracks browser online/offline status.
+ * SSR-safe: defaults to `true` on the server.
+ */
+export function useNetworkStatus(): NetworkStatus {
+  const [online, setOnline] = useState(
+    typeof navigator !== 'undefined' ? navigator.onLine : true
+  )
+
+  useEffect(() => {
+    const handleOnline = () => setOnline(true)
+    const handleOffline = () => setOnline(false)
+
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
+  }, [])
+
+  return { online }
+}

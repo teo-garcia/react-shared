@@ -2,62 +2,13 @@
 
 import { Component, type ReactNode } from 'react'
 
-import type { ErrorBoundaryProps } from '../../types'
+import type { ErrorBoundaryProps, FallbackProps } from '../../types.js'
 
 interface ErrorBoundaryState {
   hasError: boolean
   error: Error | null
 }
 
-/**
- * ErrorBoundary component - Catches JavaScript errors in child components
- *
- * This component wraps your application (or part of it) to catch runtime errors
- * and display a fallback UI instead of crashing the entire app.
- *
- * Features:
- * - Catches errors in child component tree
- * - Displays custom fallback UI
- * - Optional error callback for logging
- * - Follows React error boundary best practices
- *
- * @example Basic usage
- * ```tsx
- * import { ErrorBoundary } from '@teo-garcia/react-shared/components'
- *
- * function App() {
- *   return (
- *     <ErrorBoundary fallback={<div>Something went wrong</div>}>
- *       <YourApp />
- *     </ErrorBoundary>
- *   )
- * }
- * ```
- *
- * @example With dynamic fallback
- * ```tsx
- * import { ErrorBoundary } from '@teo-garcia/react-shared/components'
- *
- * function App() {
- *   return (
- *     <ErrorBoundary
- *       fallback={(error) => (
- *         <div>
- *           <h1>Error: {error.message}</h1>
- *           <button onClick={() => window.location.reload()}>Reload</button>
- *         </div>
- *       )}
- *       onError={(error, errorInfo) => {
- *         console.error('Error caught:', error, errorInfo)
- *         // Send to error tracking service
- *       }}
- *     >
- *       <YourApp />
- *     </ErrorBoundary>
- *   )
- * }
- * ```
- */
 export class ErrorBoundary extends Component<
   ErrorBoundaryProps,
   ErrorBoundaryState
@@ -65,67 +16,103 @@ export class ErrorBoundary extends Component<
   constructor(props: ErrorBoundaryProps) {
     super(props)
     this.state = { hasError: false, error: null }
+    this.resetError = this.resetError.bind(this)
   }
 
-  /**
-   * Static method called when an error is thrown in a child component
-   * Updates state to trigger fallback UI rendering
-   */
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     return { hasError: true, error }
   }
 
-  /**
-   * Called after an error is caught
-   * Used for side effects like logging
-   */
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    // Call optional error handler prop
-    if (this.props.onError) {
-      this.props.onError(error, errorInfo)
-    }
+    this.props.onError?.(error, errorInfo)
+  }
+
+  componentDidUpdate(prevProps: ErrorBoundaryProps): void {
+    if (!this.state.hasError) return
+    const prevKeys = prevProps.resetKeys ?? []
+    const nextKeys = this.props.resetKeys ?? []
+    const changed = nextKeys.some((key, i) => key !== prevKeys[i])
+    if (changed) this.resetError()
+  }
+
+  resetError(): void {
+    this.props.onReset?.()
+    this.setState({ hasError: false, error: null })
   }
 
   render(): ReactNode {
-    // If an error was caught, render fallback UI
-    if (this.state.hasError && this.state.error) {
-      const { fallback } = this.props
+    const { hasError, error } = this.state
 
-      // If fallback is a function, call it with the error
-      if (typeof fallback === 'function') {
-        return fallback(this.state.error)
+    if (hasError && error) {
+      const { FallbackComponent, fallbackRender, fallback } = this.props
+      const fallbackProps: FallbackProps = {
+        error,
+        resetError: this.resetError,
       }
 
-      // If fallback is provided, render it
-      if (fallback) {
-        return fallback
-      }
+      if (FallbackComponent) return <FallbackComponent {...fallbackProps} />
+      if (fallbackRender) return fallbackRender(fallbackProps)
+      if (typeof fallback === 'function') return fallback(error)
+      if (fallback != null) return fallback
 
-      // Default fallback UI if none provided
       return (
         <div
           role='alert'
           style={{
-            padding: '20px',
-            margin: '20px',
+            padding: '1rem',
             border: '1px solid #f5c6cb',
             borderRadius: '4px',
             backgroundColor: '#f8d7da',
             color: '#721c24',
+            fontFamily: 'inherit',
           }}
         >
-          <h2 style={{ marginTop: 0 }}>Something went wrong</h2>
-          <details style={{ whiteSpace: 'pre-wrap' }}>
-            <summary style={{ cursor: 'pointer', marginBottom: '10px' }}>
-              Error details
-            </summary>
-            {this.state.error.toString()}
-          </details>
+          <p style={{ margin: 0, fontWeight: 600 }}>Something went wrong</p>
+          <p style={{ margin: '0.5rem 0 0', fontSize: '0.875rem' }}>
+            {error.message}
+          </p>
+          {error.stack && (
+            <details style={{ marginTop: '0.5rem' }}>
+              <summary
+                style={{
+                  cursor: 'pointer',
+                  fontSize: '0.875rem',
+                  userSelect: 'none',
+                }}
+              >
+                Stack trace
+              </summary>
+              <pre
+                style={{
+                  marginTop: '0.5rem',
+                  whiteSpace: 'pre-wrap',
+                  fontSize: '0.75rem',
+                  overflowX: 'auto',
+                }}
+              >
+                {error.stack}
+              </pre>
+            </details>
+          )}
+          <button
+            onClick={this.resetError}
+            style={{
+              marginTop: '0.75rem',
+              padding: '0.25rem 0.75rem',
+              cursor: 'pointer',
+              fontSize: '0.875rem',
+              border: '1px solid #721c24',
+              borderRadius: '4px',
+              background: 'transparent',
+              color: '#721c24',
+            }}
+          >
+            Try again
+          </button>
         </div>
       )
     }
 
-    // No error, render children normally
     return this.props.children
   }
 }
