@@ -122,7 +122,7 @@
     "vitest": "^4.0.0"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist && tsc",
     "check": "pnpm format:check && pnpm build && pnpm test",
     "coverage": "vitest run --coverage",
     "format": "prettier --write .",
