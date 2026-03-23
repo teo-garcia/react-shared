@@ -21,20 +21,14 @@
  * ```
  */
 export const isDevelopment = (): boolean => {
-  // Check process.env first (Next.js, Node.js)
-  if (
-    typeof process !== 'undefined' &&
-    process.env?.NODE_ENV === 'development'
-  ) {
-    return true
-  }
-
-  // Check import.meta.env (Vite, modern bundlers)
-  if (typeof import.meta !== 'undefined' && import.meta.env?.DEV === true) {
-    return true
-  }
-
-  return false
+  // process.env.NODE_ENV is the universal signal: replaced at build time by
+  // Webpack (Next.js), Vite, Metro (React Native), and available as-is in Node.
+  // import.meta.env.DEV is intentionally avoided here — it is Vite-specific,
+  // always true inside Vitest, and a SyntaxError in Jest/CommonJS contexts.
+  // Use the framework adapters in src/adapters/environment/ for bundler-specific checks.
+  return (
+    typeof process !== 'undefined' && process.env?.NODE_ENV === 'development'
+  )
 }
 
 /**
