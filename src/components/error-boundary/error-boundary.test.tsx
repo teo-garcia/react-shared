@@ -52,11 +52,13 @@ describe('ErrorBoundary', () => {
   it('renders a function fallback with the caught error as argument', () => {
     render(
       <ErrorBoundary fallback={(error) => <div>Error: {error.message}</div>}>
-        <ThrowError message="specific error message" />
+        <ThrowError message='specific error message' />
       </ErrorBoundary>
     )
 
-    expect(screen.getByText('Error: specific error message')).toBeInTheDocument()
+    expect(
+      screen.getByText('Error: specific error message')
+    ).toBeInTheDocument()
   })
 
   it('calls the onError callback with the error and errorInfo', () => {
@@ -64,7 +66,7 @@ describe('ErrorBoundary', () => {
 
     render(
       <ErrorBoundary onError={onError}>
-        <ThrowError message="callback error" />
+        <ThrowError message='callback error' />
       </ErrorBoundary>
     )
 
