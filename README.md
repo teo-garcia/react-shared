@@ -2,12 +2,11 @@
 
 # @teo-garcia/react-shared
 
-**Shared React components, hooks, utilities, and adapters for fullstack web
-templates**
+**Shared React hooks, utilities, and test helpers for fullstack web templates**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![npm](https://img.shields.io/npm/v/@teo-garcia/react-shared?color=blue)](https://www.npmjs.com/package/@teo-garcia/react-shared)
-[![React](https://img.shields.io/badge/React-18+-61DAFB?logo=react&logoColor=black)](https://react.dev)
+[![React](https://img.shields.io/badge/React-19+-61DAFB?logo=react&logoColor=black)](https://react.dev)
 
 Part of the [@teo-garcia/templates](https://github.com/teo-garcia/templates)
 ecosystem
@@ -18,134 +17,129 @@ ecosystem
 
 ## Features
 
-| Area              | Includes                                                           |
-| ----------------- | ------------------------------------------------------------------ |
-| **Components**    | `ThemeSwitch`, `ViewportInfo`, `ErrorBoundary`                     |
-| **Hooks**         | `useHealthcheck` with React Query                                  |
-| **Utilities**     | Environment helpers and MSW setup helpers                          |
-| **Adapters**      | Theme and environment adapters for Next.js and Vite-based apps     |
-| **Compatibility** | Framework-agnostic usage across Next.js and React Router templates |
-| **Type Safety**   | TypeScript definitions for all exports                             |
-| **Packaging**     | Tree-shakeable module exports                                      |
+| Area           | Includes                                                                               |
+| -------------- | -------------------------------------------------------------------------------------- |
+| **Hooks**      | `useDebounce`, `useLocalStorage`, `useMediaQuery`, `useOnClickOutside`, `usePrevious`, `useIsomorphicLayoutEffect` |
+| **Components** | `ErrorBoundary`                                                                        |
+| **Utilities**  | `cn` — Tailwind-aware class merging (`clsx` + `tailwind-merge`)                        |
+| **Test utils** | `createWrapper`, `renderWithProviders` — QueryClient wrappers for Vitest               |
 
 ## Requirements
 
-- React 18+
+- React 19+
 - TypeScript
-- Tailwind CSS for included component styles
+- Tailwind CSS (for consuming apps using `cn` or components)
 
-## Quick Start
+## Installation
 
 ```bash
-# Install the package
 pnpm add @teo-garcia/react-shared
 
-# Required peer dependencies
-pnpm add react react-dom lucide-react
-
-# Optional for hooks
+# Optional: hooks that use TanStack Query
 pnpm add @tanstack/react-query
 
-# Optional for MSW helpers
-pnpm add -D msw
-```
-
-### Components
-
-```tsx
-import { ThemeSwitch } from '@teo-garcia/react-shared/components'
-import { useNextThemesAdapter } from '@teo-garcia/react-shared/adapters/theme'
-
-export function App() {
-  const themeAdapter = useNextThemesAdapter()
-  return <ThemeSwitch themeAdapter={themeAdapter} />
-}
-```
-
-### Hooks
-
-```tsx
-import { useHealthcheck } from '@teo-garcia/react-shared/hooks'
-
-export function HealthStatus() {
-  const { data, isLoading, error } = useHealthcheck({
-    url: 'http://localhost:3000/api/healthcheck',
-  })
-
-  if (isLoading) return <div>Checking...</div>
-  if (error) return <div>Health check failed</div>
-  return <div>Status: {data?.status}</div>
-}
-```
-
-### Utilities
-
-```tsx
-import { isClient, isDevelopment } from '@teo-garcia/react-shared/utils'
-
-if (isDevelopment()) {
-  console.log('Running in dev mode')
-}
-
-if (isClient()) {
-  localStorage.setItem('key', 'value')
-}
-```
-
-### Adapters
-
-```tsx
-import { ViewportInfo } from '@teo-garcia/react-shared/components'
-import { viteEnvironmentAdapter } from '@teo-garcia/react-shared/adapters/environment'
-
-export function App() {
-  return <ViewportInfo environmentAdapter={viteEnvironmentAdapter} />
-}
+# Optional: test utilities
+pnpm add -D @testing-library/react
 ```
 
 ## Exports
 
-| Export                                          | Description                  |
-| ----------------------------------------------- | ---------------------------- |
-| `@teo-garcia/react-shared/components`           | Shared React UI components   |
-| `@teo-garcia/react-shared/hooks`                | Shared React hooks           |
-| `@teo-garcia/react-shared/utils`                | Framework-agnostic utilities |
-| `@teo-garcia/react-shared/adapters/theme`       | Theme adapters               |
-| `@teo-garcia/react-shared/adapters/environment` | Environment adapters         |
+| Path                                            | Description                         |
+| ----------------------------------------------- | ----------------------------------- |
+| `@teo-garcia/react-shared/hooks/use-debounce`            | Debounce a value by delay (ms)     |
+| `@teo-garcia/react-shared/hooks/use-local-storage`       | SSR-safe localStorage state hook   |
+| `@teo-garcia/react-shared/hooks/use-media-query`         | SSR-safe CSS media query hook      |
+| `@teo-garcia/react-shared/hooks/use-on-click-outside`    | Click/touch outside a ref          |
+| `@teo-garcia/react-shared/hooks/use-previous`            | Previous value of a state/prop     |
+| `@teo-garcia/react-shared/hooks/use-isomorphic-layout-effect` | `useLayoutEffect` on client, `useEffect` on server |
+| `@teo-garcia/react-shared/components/error-boundary`     | React error boundary component     |
+| `@teo-garcia/react-shared/utils/cn`                      | Tailwind class merging utility     |
+| `@teo-garcia/react-shared/test-utils`                    | QueryClient wrappers for tests     |
 
-## Included APIs
-
-### Components
-
-- `ThemeSwitch` - Theme switcher button
-- `ViewportInfo` - Viewport dimensions display for development
-- `ErrorBoundary` - Error boundary component
+## Usage
 
 ### Hooks
 
-- `useHealthcheck` - API health check hook
+```tsx
+import { useDebounce } from '@teo-garcia/react-shared/hooks/use-debounce'
+import { useLocalStorage } from '@teo-garcia/react-shared/hooks/use-local-storage'
+import { useMediaQuery } from '@teo-garcia/react-shared/hooks/use-media-query'
+import { useOnClickOutside } from '@teo-garcia/react-shared/hooks/use-on-click-outside'
+import { usePrevious } from '@teo-garcia/react-shared/hooks/use-previous'
 
-### Utilities
+function SearchInput() {
+  const [query, setQuery] = useState('')
+  const debouncedQuery = useDebounce(query, 300)
+  // debouncedQuery updates 300ms after the user stops typing
+}
 
-- `isDevelopment()` - Check if running in development mode
-- `isProduction()` - Check if running in production mode
-- `isServer()` - Check if running on the server
-- `isClient()` - Check if running in the browser
-- `setupMSWBrowser()` - Setup MSW for browser usage
-- `setupMSWServer()` - Setup MSW for Node.js and test usage
+function ThemeToggle() {
+  const [theme, setTheme, removeTheme] = useLocalStorage('theme', 'light')
+  // SSR-safe: returns 'light' when window is undefined
+}
 
-### Adapters
+function Sidebar() {
+  const isDesktop = useMediaQuery('(min-width: 1024px)')
+  // SSR-safe: returns false on the server
+}
 
-- `useNextThemesAdapter()` - Adapter for `next-themes`
-- `createCustomThemeAdapter()` - Adapter for custom theme providers
-- `nextEnvironmentAdapter` - Environment adapter for Next.js
-- `viteEnvironmentAdapter` - Environment adapter for Vite-based apps
+function Dropdown({ onClose }: { onClose: () => void }) {
+  const ref = useRef<HTMLDivElement>(null)
+  useOnClickOutside(ref, onClose)
+  return <div ref={ref}>...</div>
+}
 
-## Notes
+function Counter({ value }: { value: number }) {
+  const previous = usePrevious(value)
+  return <div>Changed from {previous} to {value}</div>
+}
+```
 
-- Components assume Tailwind CSS is available in the consuming app.
-- Hooks and adapters are designed to be framework-agnostic where possible.
-- Consumers should import only the module paths they need.
+### ErrorBoundary
+
+```tsx
+import { ErrorBoundary } from '@teo-garcia/react-shared/components/error-boundary'
+
+export function App() {
+  return (
+    <ErrorBoundary fallback={<div>Something went wrong</div>}>
+      <MyComponent />
+    </ErrorBoundary>
+  )
+}
+```
+
+### cn utility
+
+```tsx
+import { cn } from '@teo-garcia/react-shared/utils/cn'
+
+// Merges Tailwind classes — later classes win on conflict
+cn('p-4 text-sm', condition && 'text-lg', 'p-2')
+// → 'text-lg p-2'  (p-4 overridden by p-2, text-sm by text-lg)
+```
+
+### Test utilities
+
+```tsx
+import { createWrapper, renderWithProviders } from '@teo-garcia/react-shared/test-utils'
+
+// createWrapper: creates a QueryClientProvider wrapper (use at module level, not inside components)
+const Wrapper = createWrapper()
+
+test('my component', () => {
+  render(<MyComponent />, { wrapper: Wrapper })
+})
+
+// renderWithProviders: convenience wrapper that creates the provider for you
+test('my component', () => {
+  renderWithProviders(<MyComponent />)
+})
+
+// Custom QueryClient
+import { QueryClient } from '@tanstack/react-query'
+const Wrapper = createWrapper({ queryClient: new QueryClient({ ... }) })
+```
 
 ## Related Packages
 
