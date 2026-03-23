@@ -10,13 +10,6 @@ const DEFAULT_BREAKPOINTS: Record<string, number> = {
   '2xl': 1536,
 }
 
-const POSITION_STYLES: Record<string, CSSProperties> = {
-  'top-left': { top: '0.75rem', left: '0.75rem' },
-  'top-right': { top: '0.75rem', right: '0.75rem' },
-  'bottom-left': { bottom: '0.75rem', left: '0.75rem' },
-  'bottom-right': { bottom: '0.75rem', right: '0.75rem' },
-}
-
 function resolveBreakpoint(
   width: number,
   breakpoints: Record<string, number>
@@ -42,26 +35,49 @@ function matchShortcut(e: KeyboardEvent, shortcut: string): boolean {
 
 export interface DevPanelProps {
   /**
-   * Tailwind breakpoint map. Defaults to standard Tailwind v3/v4 breakpoints.
+   * Tailwind breakpoint map. Defaults to standard Tailwind v4 breakpoints.
    * Pass your own if you've customized the theme.
    */
   breakpoints?: Record<string, number>
   /** Additional debug content rendered inside the panel. */
   children?: ReactNode
-  /** Corner to anchor the panel to. Defaults to `'bottom-left'`. */
-  position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
   /**
    * Keyboard shortcut to toggle the panel.
    * Format: modifier keys joined by `+`, then the key. Defaults to `'shift+d'`.
-   * Examples: `'shift+d'`, `'ctrl+shift+d'`, `'alt+d'`.
    */
   shortcut?: string
+}
+
+const PILL_BASE: CSSProperties = {
+  position: 'fixed',
+  bottom: '1rem',
+  left: '50%',
+  transform: 'translateX(-50%)',
+  zIndex: 9999,
+  fontFamily: 'ui-monospace, "Cascadia Code", "Fira Mono", monospace',
+  fontSize: '0.7rem',
+  lineHeight: 1,
+  background: 'rgba(9, 9, 11, 0.88)',
+  border: '1px solid rgba(255, 255, 255, 0.08)',
+  borderRadius: '9999px',
+  backdropFilter: 'blur(12px)',
+  WebkitBackdropFilter: 'blur(12px)',
+  boxShadow:
+    '0 4px 24px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04)',
+  userSelect: 'none',
+  whiteSpace: 'nowrap',
+}
+
+const DIVIDER: CSSProperties = {
+  width: '1px',
+  height: '0.7rem',
+  background: 'rgba(255,255,255,0.1)',
+  flexShrink: 0,
 }
 
 function DevPanelInner({
   breakpoints = DEFAULT_BREAKPOINTS,
   children,
-  position = 'bottom-left',
   shortcut = 'shift+d',
 }: DevPanelProps) {
   const [open, setOpen] = useState(true)
@@ -76,17 +92,13 @@ function DevPanelInner({
           window.matchMedia('(prefers-color-scheme: dark)').matches
       )
     }
-
     update()
     window.addEventListener('resize', update)
-
-    // Watch for class changes on <html> (Tailwind dark mode toggle)
     const observer = new MutationObserver(update)
     observer.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ['class'],
     })
-
     return () => {
       window.removeEventListener('resize', update)
       observer.disconnect()
@@ -107,33 +119,36 @@ function DevPanelInner({
   ]
   const current = resolveBreakpoint(viewport.w, breakpoints)
 
-  const base: CSSProperties = {
-    position: 'fixed',
-    ...POSITION_STYLES[position],
-    zIndex: 9999,
-    fontFamily: 'ui-monospace, monospace',
-    fontSize: '0.72rem',
-    backdropFilter: 'blur(10px)',
-    WebkitBackdropFilter: 'blur(10px)',
-  }
-
   if (!open) {
     return (
       <button
         onClick={() => setOpen(true)}
         title={`Dev Panel (${shortcut})`}
         style={{
-          ...base,
-          background: 'rgba(15,15,15,0.88)',
-          color: '#06b6d4',
-          border: '1px solid rgba(255,255,255,0.08)',
-          borderRadius: '6px',
-          padding: '0.2rem 0.5rem',
+          ...PILL_BASE,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.3rem',
+          padding: '0.35rem 0.6rem',
           cursor: 'pointer',
-          lineHeight: 1.5,
+          color: 'rgba(255,255,255,0.45)',
         }}
       >
-        {current}
+        <span
+          aria-hidden
+          style={{ color: '#38bdf8', fontSize: '0.45rem', lineHeight: 1 }}
+        >
+          ●
+        </span>
+        <span
+          style={{
+            color: '#e2e8f0',
+            fontWeight: 600,
+            letterSpacing: '0.05em',
+          }}
+        >
+          {current}
+        </span>
       </button>
     )
   }
@@ -141,55 +156,31 @@ function DevPanelInner({
   return (
     <div
       style={{
-        ...base,
-        background: 'rgba(12,12,12,0.93)',
-        color: '#cbd5e1',
-        border: '1px solid rgba(255,255,255,0.07)',
-        borderRadius: '10px',
-        padding: '0.6rem 0.75rem',
-        lineHeight: 1.7,
-        minWidth: '13rem',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
-        userSelect: 'none',
+        ...PILL_BASE,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.55rem',
+        padding: '0.4rem 0.65rem 0.4rem 0.7rem',
       }}
     >
-      {/* Close button */}
-      <button
-        onClick={() => setOpen(false)}
-        title='Close'
-        style={{
-          position: 'absolute',
-          top: '0.3rem',
-          right: '0.45rem',
-          background: 'none',
-          border: 'none',
-          color: '#475569',
-          cursor: 'pointer',
-          fontSize: '0.65rem',
-          lineHeight: 1,
-          padding: 0,
-        }}
+      {/* Accent dot */}
+      <span
+        aria-hidden
+        style={{ color: '#38bdf8', fontSize: '0.45rem', lineHeight: 1 }}
       >
-        ✕
-      </button>
+        ●
+      </span>
 
       {/* Breakpoint scale */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '0.4rem',
-          alignItems: 'baseline',
-          marginBottom: '0.1rem',
-        }}
-      >
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.3rem' }}>
         {allBreakpoints.map(([name]) => (
           <span
             key={name}
             style={{
-              color: name === current ? '#06b6d4' : '#334155',
-              fontWeight: name === current ? 700 : 400,
-              fontSize: name === current ? '0.78rem' : '0.68rem',
-              letterSpacing: name === current ? '0.02em' : undefined,
+              color: name === current ? '#e2e8f0' : 'rgba(255,255,255,0.18)',
+              fontWeight: name === current ? 600 : 400,
+              fontSize: name === current ? '0.72rem' : '0.67rem',
+              letterSpacing: name === current ? '0.05em' : '0.02em',
             }}
           >
             {name}
@@ -197,60 +188,79 @@ function DevPanelInner({
         ))}
       </div>
 
-      {/* Viewport + theme */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '0.75rem',
-          color: '#475569',
-          fontSize: '0.68rem',
-        }}
-      >
-        <span>
-          {viewport.w} × {viewport.h}
-        </span>
-        <span>{dark ? '☾ dark' : '☀ light'}</span>
-      </div>
+      <div style={DIVIDER} />
 
-      {/* Custom debug slots */}
+      {/* Viewport */}
+      <span style={{ color: 'rgba(255,255,255,0.3)', letterSpacing: '0.02em' }}>
+        {viewport.w}
+        <span style={{ color: 'rgba(255,255,255,0.12)', margin: '0 0.15rem' }}>
+          ×
+        </span>
+        {viewport.h}
+      </span>
+
+      <div style={DIVIDER} />
+
+      {/* Theme */}
+      <span
+        title={dark ? 'dark mode' : 'light mode'}
+        style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.65rem' }}
+      >
+        {dark ? '◑' : '◯'}
+      </span>
+
+      {/* Custom debug slot */}
       {children && (
-        <div
-          style={{
-            marginTop: '0.4rem',
-            paddingTop: '0.4rem',
-            borderTop: '1px solid rgba(255,255,255,0.05)',
-            color: '#64748b',
-            fontSize: '0.68rem',
-            lineHeight: 1.6,
-          }}
-        >
-          {children}
-        </div>
+        <>
+          <div style={DIVIDER} />
+          <div
+            style={{
+              color: 'rgba(255,255,255,0.28)',
+              fontSize: '0.68rem',
+            }}
+          >
+            {children}
+          </div>
+        </>
       )}
 
+      <div style={DIVIDER} />
+
       {/* Shortcut hint */}
-      <div
+      <span style={{ color: 'rgba(255,255,255,0.15)', fontSize: '0.65rem' }}>
+        {shortcut} to toggle
+      </span>
+
+      {/* Collapse */}
+      <button
+        onClick={() => setOpen(false)}
+        title='Close'
         style={{
-          marginTop: '0.3rem',
-          color: '#1e293b',
-          fontSize: '0.6rem',
+          background: 'none',
+          border: 'none',
+          color: 'rgba(255,255,255,0.2)',
+          cursor: 'pointer',
+          fontSize: '0.58rem',
+          lineHeight: 1,
+          padding: '0 0 0 0.1rem',
+          marginLeft: '0.05rem',
         }}
       >
-        {shortcut} to toggle
-      </div>
+        ✕
+      </button>
     </div>
   )
 }
 
 /**
- * Fixed overlay showing the current Tailwind breakpoint, viewport dimensions,
- * and color scheme. Dev-only — renders nothing in production.
+ * Fixed bottom-center overlay showing the current Tailwind breakpoint, viewport
+ * dimensions, and color scheme. Dev-only — renders nothing in production.
  *
- * Much better than raw px — shows the named breakpoint (`lg`) so you immediately
- * know which Tailwind classes are active, not just "1124px".
+ * Positioned at bottom-center to avoid clashing with Next.js (top-left) and
+ * TanStack devtools (bottom-right). Collapses to a compact pill on close.
  *
- * Pass children to add custom debug rows (route, user, feature flags, etc.).
- * Toggle visibility with the keyboard shortcut (default: Shift+D).
+ * Pass `children` to add custom debug rows (route, user ID, feature flags…).
+ * Toggle with the keyboard shortcut (default: Shift+D).
  */
 export function DevPanel(props: DevPanelProps) {
   if (process.env.NODE_ENV === 'production') return null

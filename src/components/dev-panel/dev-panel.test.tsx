@@ -8,10 +8,10 @@ describe('DevPanel', () => {
     vi.unstubAllEnvs()
   })
 
-  it('renders the current breakpoint in the panel', () => {
+  it('renders the breakpoint scale', () => {
     render(<DevPanel />)
-    // Panel renders breakpoint scale — at least one label is present
     expect(screen.getByText('xs')).toBeInTheDocument()
+    expect(screen.getByText('sm')).toBeInTheDocument()
   })
 
   it('renders children in the panel', () => {
@@ -20,27 +20,23 @@ describe('DevPanel', () => {
         <span>Route: /dashboard</span>
       </DevPanel>
     )
-
     expect(screen.getByText('Route: /dashboard')).toBeInTheDocument()
   })
 
-  it('collapses to a badge when the close button is clicked', () => {
+  it('collapses to a compact pill when the close button is clicked', () => {
     render(<DevPanel />)
-
     fireEvent.click(screen.getByTitle('Close'))
-    // After close, the toggle button appears
+    // Collapsed pill button appears
     expect(screen.getByTitle(/Dev Panel/)).toBeInTheDocument()
-    // Shortcut hint is no longer visible
-    expect(screen.queryByText(/to toggle/)).not.toBeInTheDocument()
+    // Breakpoint scale is no longer visible
+    expect(screen.queryByText('sm')).not.toBeInTheDocument()
   })
 
-  it('reopens when the badge is clicked', () => {
+  it('reopens when the collapsed pill is clicked', () => {
     render(<DevPanel />)
-
     fireEvent.click(screen.getByTitle('Close'))
     fireEvent.click(screen.getByTitle(/Dev Panel/))
-
-    expect(screen.getByText(/to toggle/)).toBeInTheDocument()
+    expect(screen.getByText('sm')).toBeInTheDocument()
   })
 
   it('renders nothing in production', () => {

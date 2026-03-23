@@ -1,6 +1,6 @@
 {
   "name": "@teo-garcia/react-shared",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Shared React hooks, utilities, and test helpers for the teo-garcia template portfolio",
   "type": "module",
   "main": "./dist/index.js",
@@ -8,142 +8,177 @@
   "exports": {
     ".": {
       "import": "./dist/index.js",
+      "default": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
     "./components": {
       "import": "./dist/components/index.js",
+      "default": "./dist/components/index.js",
       "types": "./dist/components/index.d.ts"
     },
     "./components/error-boundary": {
       "import": "./dist/components/error-boundary/index.js",
+      "default": "./dist/components/error-boundary/index.js",
       "types": "./dist/components/error-boundary/index.d.ts"
     },
     "./components/focus-trap": {
       "import": "./dist/components/focus-trap/index.js",
+      "default": "./dist/components/focus-trap/index.js",
       "types": "./dist/components/focus-trap/index.d.ts"
     },
     "./components/portal": {
       "import": "./dist/components/portal/index.js",
+      "default": "./dist/components/portal/index.js",
       "types": "./dist/components/portal/index.d.ts"
     },
     "./components/skeleton": {
       "import": "./dist/components/skeleton/index.js",
+      "default": "./dist/components/skeleton/index.js",
       "types": "./dist/components/skeleton/index.d.ts"
     },
     "./components/visually-hidden": {
       "import": "./dist/components/visually-hidden/index.js",
+      "default": "./dist/components/visually-hidden/index.js",
       "types": "./dist/components/visually-hidden/index.d.ts"
     },
     "./components/aspect-ratio": {
       "import": "./dist/components/aspect-ratio/index.js",
+      "default": "./dist/components/aspect-ratio/index.js",
       "types": "./dist/components/aspect-ratio/index.d.ts"
     },
     "./components/debug-json": {
       "import": "./dist/components/debug-json/index.js",
+      "default": "./dist/components/debug-json/index.js",
       "types": "./dist/components/debug-json/index.d.ts"
     },
     "./components/dev-panel": {
       "import": "./dist/components/dev-panel/index.js",
+      "default": "./dist/components/dev-panel/index.js",
       "types": "./dist/components/dev-panel/index.d.ts"
     },
     "./components/separator": {
       "import": "./dist/components/separator/index.js",
+      "default": "./dist/components/separator/index.js",
       "types": "./dist/components/separator/index.d.ts"
     },
     "./components/skip-link": {
       "import": "./dist/components/skip-link/index.js",
+      "default": "./dist/components/skip-link/index.js",
       "types": "./dist/components/skip-link/index.d.ts"
     },
     "./hooks": {
       "import": "./dist/hooks/index.js",
+      "default": "./dist/hooks/index.js",
       "types": "./dist/hooks/index.d.ts"
     },
     "./hooks/use-debounce": {
       "import": "./dist/hooks/use-debounce.js",
+      "default": "./dist/hooks/use-debounce.js",
       "types": "./dist/hooks/use-debounce.d.ts"
     },
     "./hooks/use-isomorphic-layout-effect": {
       "import": "./dist/hooks/use-isomorphic-layout-effect.js",
+      "default": "./dist/hooks/use-isomorphic-layout-effect.js",
       "types": "./dist/hooks/use-isomorphic-layout-effect.d.ts"
     },
     "./hooks/use-local-storage": {
       "import": "./dist/hooks/use-local-storage.js",
+      "default": "./dist/hooks/use-local-storage.js",
       "types": "./dist/hooks/use-local-storage.d.ts"
     },
     "./hooks/use-media-query": {
       "import": "./dist/hooks/use-media-query.js",
+      "default": "./dist/hooks/use-media-query.js",
       "types": "./dist/hooks/use-media-query.d.ts"
     },
     "./hooks/use-on-click-outside": {
       "import": "./dist/hooks/use-on-click-outside.js",
+      "default": "./dist/hooks/use-on-click-outside.js",
       "types": "./dist/hooks/use-on-click-outside.d.ts"
     },
     "./hooks/use-previous": {
       "import": "./dist/hooks/use-previous.js",
+      "default": "./dist/hooks/use-previous.js",
       "types": "./dist/hooks/use-previous.d.ts"
     },
     "./hooks/use-copy-to-clipboard": {
       "import": "./dist/hooks/use-copy-to-clipboard.js",
+      "default": "./dist/hooks/use-copy-to-clipboard.js",
       "types": "./dist/hooks/use-copy-to-clipboard.d.ts"
     },
     "./hooks/use-event-listener": {
       "import": "./dist/hooks/use-event-listener.js",
+      "default": "./dist/hooks/use-event-listener.js",
       "types": "./dist/hooks/use-event-listener.d.ts"
     },
     "./hooks/use-idle": {
       "import": "./dist/hooks/use-idle.js",
+      "default": "./dist/hooks/use-idle.js",
       "types": "./dist/hooks/use-idle.d.ts"
     },
     "./hooks/use-intersection-observer": {
       "import": "./dist/hooks/use-intersection-observer.js",
+      "default": "./dist/hooks/use-intersection-observer.js",
       "types": "./dist/hooks/use-intersection-observer.d.ts"
     },
     "./hooks/use-latest": {
       "import": "./dist/hooks/use-latest.js",
+      "default": "./dist/hooks/use-latest.js",
       "types": "./dist/hooks/use-latest.d.ts"
     },
     "./hooks/use-network-status": {
       "import": "./dist/hooks/use-network-status.js",
+      "default": "./dist/hooks/use-network-status.js",
       "types": "./dist/hooks/use-network-status.d.ts"
     },
     "./hooks/use-render-count": {
       "import": "./dist/hooks/use-render-count.js",
+      "default": "./dist/hooks/use-render-count.js",
       "types": "./dist/hooks/use-render-count.d.ts"
     },
     "./hooks/use-toggle": {
       "import": "./dist/hooks/use-toggle.js",
+      "default": "./dist/hooks/use-toggle.js",
       "types": "./dist/hooks/use-toggle.d.ts"
     },
     "./hooks/use-why-did-you-render": {
       "import": "./dist/hooks/use-why-did-you-render.js",
+      "default": "./dist/hooks/use-why-did-you-render.js",
       "types": "./dist/hooks/use-why-did-you-render.d.ts"
     },
     "./utils": {
       "import": "./dist/utils/index.js",
+      "default": "./dist/utils/index.js",
       "types": "./dist/utils/index.d.ts"
     },
     "./utils/cn": {
       "import": "./dist/utils/cn.js",
+      "default": "./dist/utils/cn.js",
       "types": "./dist/utils/cn.d.ts"
     },
     "./utils/format-date": {
       "import": "./dist/utils/format-date.js",
+      "default": "./dist/utils/format-date.js",
       "types": "./dist/utils/format-date.d.ts"
     },
     "./utils/format-number": {
       "import": "./dist/utils/format-number.js",
+      "default": "./dist/utils/format-number.js",
       "types": "./dist/utils/format-number.d.ts"
     },
     "./utils/truncate": {
       "import": "./dist/utils/truncate.js",
+      "default": "./dist/utils/truncate.js",
       "types": "./dist/utils/truncate.d.ts"
     },
     "./test-utils": {
       "import": "./dist/test-utils/index.js",
+      "default": "./dist/test-utils/index.js",
       "types": "./dist/test-utils/index.d.ts"
     },
     "./types": {
       "import": "./dist/types.js",
+      "default": "./dist/types.js",
       "types": "./dist/types.d.ts"
     }
   },
