@@ -1,3 +1,8 @@
+export {
+  DEFAULT_BREAKPOINTS,
+  resolveBreakpoint,
+  useBreakpoint,
+} from './use-breakpoint.js'
 export { useCopyToClipboard } from './use-copy-to-clipboard.js'
 export { useDebounce } from './use-debounce.js'
 export { useEventListener } from './use-event-listener.js'

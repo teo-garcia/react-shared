@@ -1,4 +1,5 @@
 export * from './aspect-ratio/index.js'
+export * from './client-only/index.js'
 export * from './debug-json/index.js'
 export * from './dev-panel/index.js'
 export * from './error-boundary/index.js'

@@ -1,29 +1,41 @@
-import { cn } from '../../utils/cn.js'
+import { type HTMLAttributes } from 'react'
 
-interface SeparatorProps {
+interface SeparatorProps extends HTMLAttributes<HTMLHRElement> {
   orientation?: 'horizontal' | 'vertical'
-  className?: string
 }
 
 /**
- * Semantic separator with Tailwind styling.
+ * Semantic separator with self-contained styling.
  * RSC-safe. Use `orientation="vertical"` in flex rows.
  */
 export function Separator({
   orientation = 'horizontal',
-  className,
+  style,
+  ...props
 }: SeparatorProps) {
   return (
     <hr
       role='separator'
       aria-orientation={orientation}
-      className={cn(
-        orientation === 'horizontal'
-          ? 'my-2 w-full border-t'
-          : 'mx-2 h-full border-l',
-        'border-black/10 dark:border-white/10',
-        className
-      )}
+      style={{
+        border: 0,
+        flexShrink: 0,
+        ...(orientation === 'horizontal'
+          ? {
+              borderTop:
+                '1px solid var(--react-shared-separator-color, rgba(15, 23, 42, 0.12))',
+              margin: '0.5rem 0',
+              width: '100%',
+            }
+          : {
+              alignSelf: 'stretch',
+              borderLeft:
+                '1px solid var(--react-shared-separator-color, rgba(15, 23, 42, 0.12))',
+              margin: '0 0.5rem',
+            }),
+        ...style,
+      }}
+      {...props}
     />
   )
 }

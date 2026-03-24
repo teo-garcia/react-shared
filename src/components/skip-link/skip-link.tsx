@@ -25,18 +25,22 @@ export function SkipLink({
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
       style={{
-        position: 'absolute',
+        position: 'fixed',
         top: focused ? '0.5rem' : '-100%',
         left: '0.5rem',
         zIndex: 9999,
         padding: '0.5rem 1rem',
-        background: '#000',
-        color: '#fff',
+        background:
+          'var(--react-shared-skip-link-background, rgba(15, 23, 42, 0.96))',
+        color: 'var(--react-shared-skip-link-foreground, #fff)',
         textDecoration: 'none',
-        borderRadius: '4px',
+        borderRadius: '9999px',
         fontSize: '0.875rem',
-        fontWeight: 500,
+        fontWeight: 600,
         transition: 'top 0.1s',
+        boxShadow: focused
+          ? '0 0 0 3px rgba(59, 130, 246, 0.35)'
+          : '0 1px 2px rgba(15, 23, 42, 0.16)',
         outline: '2px solid transparent',
       }}
       {...props}

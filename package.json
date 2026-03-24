@@ -1,6 +1,6 @@
 {
   "name": "@teo-garcia/react-shared",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "Shared React hooks, utilities, and test helpers for the teo-garcia template portfolio",
   "type": "module",
   "main": "./dist/index.js",
@@ -45,6 +45,11 @@
       "import": "./dist/components/aspect-ratio/index.js",
       "default": "./dist/components/aspect-ratio/index.js",
       "types": "./dist/components/aspect-ratio/index.d.ts"
+    },
+    "./components/client-only": {
+      "import": "./dist/components/client-only/index.js",
+      "default": "./dist/components/client-only/index.js",
+      "types": "./dist/components/client-only/index.d.ts"
     },
     "./components/debug-json": {
       "import": "./dist/components/debug-json/index.js",
@@ -105,6 +110,11 @@
       "import": "./dist/hooks/use-copy-to-clipboard.js",
       "default": "./dist/hooks/use-copy-to-clipboard.js",
       "types": "./dist/hooks/use-copy-to-clipboard.d.ts"
+    },
+    "./hooks/use-breakpoint": {
+      "import": "./dist/hooks/use-breakpoint.js",
+      "default": "./dist/hooks/use-breakpoint.js",
+      "types": "./dist/hooks/use-breakpoint.d.ts"
     },
     "./hooks/use-event-listener": {
       "import": "./dist/hooks/use-event-listener.js",

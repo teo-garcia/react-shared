@@ -1,13 +1,8 @@
 /**
  * @teo-garcia/react-shared
  *
- * Shared React hooks, utilities, and test helpers for the teo-garcia template portfolio.
- *
- * Exports:
- * - Hooks: useDebounce, useIsomorphicLayoutEffect, useLocalStorage, useMediaQuery, useOnClickOutside, usePrevious
- * - Components: ErrorBoundary
- * - Utils: cn (clsx + tailwind-merge)
- * - Test utilities: createWrapper, renderWithProviders (import from react-shared/test-utils)
+ * Self-contained React hooks, utilities, components, and test helpers for the
+ * teo-garcia template portfolio.
  *
  * @packageDocumentation
  */

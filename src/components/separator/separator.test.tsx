@@ -20,7 +20,8 @@ describe('Separator', () => {
   })
 
   it('merges className', () => {
-    render(<Separator className='my-custom' />)
+    render(<Separator className='my-custom' style={{ opacity: 0.4 }} />)
     expect(screen.getByRole('separator')).toHaveClass('my-custom')
+    expect(screen.getByRole('separator')).toHaveStyle({ opacity: '0.4' })
   })
 })

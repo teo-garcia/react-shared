@@ -9,15 +9,18 @@ describe('Skeleton', () => {
     expect(screen.getByTestId('skeleton')).toBeInTheDocument()
   })
 
-  it('applies base animation classes', () => {
+  it('applies the default animation and background styles', () => {
     render(<Skeleton data-testid='skeleton' />)
-    expect(screen.getByTestId('skeleton')).toHaveClass('animate-pulse')
+    const el = screen.getByTestId('skeleton')
+    expect(el.getAttribute('style')).toContain('react-shared-skeleton-pulse')
+    expect(el).toHaveStyle({ borderRadius: '8px' })
   })
 
-  it('merges additional className', () => {
-    render(<Skeleton data-testid='skeleton' className='h-4 w-full' />)
+  it('merges additional inline styles', () => {
+    render(<Skeleton data-testid='skeleton' style={{ height: '1rem' }} />)
     const el = screen.getByTestId('skeleton')
-    expect(el).toHaveClass('h-4', 'w-full', 'animate-pulse')
+    expect(el.getAttribute('style')).toContain('react-shared-skeleton-pulse')
+    expect(el).toHaveStyle({ height: '16px' })
   })
 
   it('forwards additional HTML attributes', () => {

@@ -30,7 +30,7 @@ describe('SkipLink', () => {
     const link = screen.getByRole('link')
 
     fireEvent.focus(link)
-    // happy-dom resolves rem → px (0.5rem = 8px at default 16px base)
+    // happy-dom resolves rem -> px (0.5rem = 8px at the default 16px root size)
     expect(link).toHaveStyle({ top: '8px' })
   })
 
