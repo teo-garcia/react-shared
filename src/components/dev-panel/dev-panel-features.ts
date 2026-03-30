@@ -6,14 +6,17 @@ export type DevPanelFeature =
   | 'connection'
   | 'contrast'
   | 'displayMode'
+  | 'domCount'
   | 'dpr'
   | 'focus'
+  | 'focusRings'
   | 'fullscreen'
   | 'grid'
   | 'inverted'
   | 'locale'
   | 'media'
   | 'memory'
+  | 'noAnimations'
   | 'online'
   | 'orientation'
   | 'outline'
@@ -23,6 +26,8 @@ export type DevPanelFeature =
   | 'saveData'
   | 'scrollbar'
   | 'scroll'
+  | 'slowMo'
+  | 'timing'
   | 'visibility'
   | 'visualViewport'
 
@@ -35,14 +40,17 @@ export const ALL_DEV_PANEL_FEATURES: readonly DevPanelFeature[] = [
   'connection',
   'contrast',
   'displayMode',
+  'domCount',
   'dpr',
   'focus',
+  'focusRings',
   'fullscreen',
   'grid',
   'inverted',
   'locale',
   'media',
   'memory',
+  'noAnimations',
   'online',
   'orientation',
   'outline',
@@ -52,6 +60,8 @@ export const ALL_DEV_PANEL_FEATURES: readonly DevPanelFeature[] = [
   'saveData',
   'scrollbar',
   'scroll',
+  'slowMo',
+  'timing',
   'visibility',
   'visualViewport',
 ]

@@ -9,6 +9,7 @@ export interface DevPanelDiagnostics {
   connectionSummary: string
   contrast: 'custom' | 'less' | 'more' | 'no-preference'
   displayStandalone: boolean
+  domNodeCount: number
   dpr: number
   focusPeek: string
   fps: number
@@ -19,6 +20,7 @@ export interface DevPanelDiagnostics {
   locale: string
   online: boolean
   orientation: string
+  pageLoadMs: number | null
   pointerCoarse: boolean
   prefersColorScheme: ResolvedTheme
   reducedMotion: boolean
@@ -44,6 +46,7 @@ const INITIAL: DevPanelDiagnostics = {
   connectionSummary: '',
   contrast: 'no-preference',
   displayStandalone: false,
+  domNodeCount: 0,
   dpr: 1,
   focusPeek: '',
   fps: 0,
@@ -54,6 +57,7 @@ const INITIAL: DevPanelDiagnostics = {
   locale: '',
   online: true,
   orientation: 'unknown',
+  pageLoadMs: null,
   pointerCoarse: false,
   prefersColorScheme: 'light',
   reducedMotion: false,
@@ -149,7 +153,7 @@ function focusPeekLabel(): string {
     const cls = el.className.trim().split(/\s+/).filter(Boolean).slice(0, 2)
     if (cls.length) s += `.${cls.join('.')}`
   }
-  return s.length > 72 ? `${s.slice(0, 69)}…` : s
+  return s.length > 72 ? `${s.slice(0, 69)}\u2026` : s
 }
 
 function readConnectionSummary(): string {
@@ -167,7 +171,24 @@ function readConnectionSummary(): string {
   const parts: string[] = [c.effectiveType]
   if (typeof c.downlink === 'number') parts.push(`${c.downlink} Mbps`)
   if (typeof c.rtt === 'number') parts.push(`rtt ${c.rtt}ms`)
-  return parts.join(' · ')
+  return parts.join(' \u00b7 ')
+}
+
+function readPageLoadMs(): number | null {
+  try {
+    const entries = performance.getEntriesByType(
+      'navigation'
+    ) as PerformanceNavigationTiming[]
+    if (entries.length > 0) {
+      const nav = entries[0]
+      if (nav.loadEventEnd > 0) {
+        return Math.round(nav.loadEventEnd - nav.startTime)
+      }
+    }
+  } catch {
+    /* unavailable */
+  }
+  return null
 }
 
 export function devPanelFeaturesKey(
@@ -453,6 +474,16 @@ export function useDevPanelDiagnostics(
       cleanups.push(() => document.removeEventListener('focusin', update, true))
     }
 
+    if (enabled.has('timing')) {
+      const attempt = () => {
+        const ms = readPageLoadMs()
+        if (ms !== null) patch({ pageLoadMs: ms })
+      }
+      attempt()
+      const id = window.setTimeout(attempt, 1000)
+      cleanups.push(() => window.clearTimeout(id))
+    }
+
     return () => {
       cleanups.forEach((fn) => fn())
     }
@@ -505,6 +536,22 @@ export function useDevPanelDiagnostics(
 
     tick()
     const id = window.setInterval(tick, 2000)
+    return () => window.clearInterval(id)
+  }, [enabled])
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    if (!enabled.has('domCount')) return
+
+    const tick = () => {
+      setState((s) => ({
+        ...s,
+        domNodeCount: document.querySelectorAll('*').length,
+      }))
+    }
+
+    tick()
+    const id = window.setInterval(tick, 3000)
     return () => window.clearInterval(id)
   }, [enabled])
 

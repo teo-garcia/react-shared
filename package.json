@@ -1,6 +1,6 @@
 {
   "name": "@teo-garcia/react-shared",
-  "version": "1.3.0",
+  "version": "2.0.0",
   "description": "Shared React hooks, utilities, and test helpers for the teo-garcia template portfolio",
   "type": "module",
   "main": "./dist/index.js",
@@ -65,6 +65,11 @@
       "import": "./dist/components/separator/index.js",
       "default": "./dist/components/separator/index.js",
       "types": "./dist/components/separator/index.d.ts"
+    },
+    "./components/show": {
+      "import": "./dist/components/show/index.js",
+      "default": "./dist/components/show/index.js",
+      "types": "./dist/components/show/index.d.ts"
     },
     "./components/skip-link": {
       "import": "./dist/components/skip-link/index.js",
@@ -151,6 +156,51 @@
       "default": "./dist/hooks/use-toggle.js",
       "types": "./dist/hooks/use-toggle.d.ts"
     },
+    "./hooks/use-counter": {
+      "import": "./dist/hooks/use-counter.js",
+      "default": "./dist/hooks/use-counter.js",
+      "types": "./dist/hooks/use-counter.d.ts"
+    },
+    "./hooks/use-document-title": {
+      "import": "./dist/hooks/use-document-title.js",
+      "default": "./dist/hooks/use-document-title.js",
+      "types": "./dist/hooks/use-document-title.d.ts"
+    },
+    "./hooks/use-hover": {
+      "import": "./dist/hooks/use-hover.js",
+      "default": "./dist/hooks/use-hover.js",
+      "types": "./dist/hooks/use-hover.d.ts"
+    },
+    "./hooks/use-interval": {
+      "import": "./dist/hooks/use-interval.js",
+      "default": "./dist/hooks/use-interval.js",
+      "types": "./dist/hooks/use-interval.d.ts"
+    },
+    "./hooks/use-key-press": {
+      "import": "./dist/hooks/use-key-press.js",
+      "default": "./dist/hooks/use-key-press.js",
+      "types": "./dist/hooks/use-key-press.d.ts"
+    },
+    "./hooks/use-measure": {
+      "import": "./dist/hooks/use-measure.js",
+      "default": "./dist/hooks/use-measure.js",
+      "types": "./dist/hooks/use-measure.d.ts"
+    },
+    "./hooks/use-scroll-lock": {
+      "import": "./dist/hooks/use-scroll-lock.js",
+      "default": "./dist/hooks/use-scroll-lock.js",
+      "types": "./dist/hooks/use-scroll-lock.d.ts"
+    },
+    "./hooks/use-throttle": {
+      "import": "./dist/hooks/use-throttle.js",
+      "default": "./dist/hooks/use-throttle.js",
+      "types": "./dist/hooks/use-throttle.d.ts"
+    },
+    "./hooks/use-timeout": {
+      "import": "./dist/hooks/use-timeout.js",
+      "default": "./dist/hooks/use-timeout.js",
+      "types": "./dist/hooks/use-timeout.d.ts"
+    },
     "./hooks/use-why-did-you-render": {
       "import": "./dist/hooks/use-why-did-you-render.js",
       "default": "./dist/hooks/use-why-did-you-render.js",
@@ -176,10 +226,55 @@
       "default": "./dist/utils/format-number.js",
       "types": "./dist/utils/format-number.d.ts"
     },
+    "./utils/capitalize": {
+      "import": "./dist/utils/capitalize.js",
+      "default": "./dist/utils/capitalize.js",
+      "types": "./dist/utils/capitalize.d.ts"
+    },
+    "./utils/clamp": {
+      "import": "./dist/utils/clamp.js",
+      "default": "./dist/utils/clamp.js",
+      "types": "./dist/utils/clamp.d.ts"
+    },
+    "./utils/create-safe-context": {
+      "import": "./dist/utils/create-safe-context.js",
+      "default": "./dist/utils/create-safe-context.js",
+      "types": "./dist/utils/create-safe-context.d.ts"
+    },
+    "./utils/env": {
+      "import": "./dist/utils/env.js",
+      "default": "./dist/utils/env.js",
+      "types": "./dist/utils/env.d.ts"
+    },
+    "./utils/group-by": {
+      "import": "./dist/utils/group-by.js",
+      "default": "./dist/utils/group-by.js",
+      "types": "./dist/utils/group-by.d.ts"
+    },
+    "./utils/invariant": {
+      "import": "./dist/utils/invariant.js",
+      "default": "./dist/utils/invariant.js",
+      "types": "./dist/utils/invariant.d.ts"
+    },
+    "./utils/noop": {
+      "import": "./dist/utils/noop.js",
+      "default": "./dist/utils/noop.js",
+      "types": "./dist/utils/noop.d.ts"
+    },
+    "./utils/sleep": {
+      "import": "./dist/utils/sleep.js",
+      "default": "./dist/utils/sleep.js",
+      "types": "./dist/utils/sleep.d.ts"
+    },
     "./utils/truncate": {
       "import": "./dist/utils/truncate.js",
       "default": "./dist/utils/truncate.js",
       "types": "./dist/utils/truncate.d.ts"
+    },
+    "./utils/unique-by": {
+      "import": "./dist/utils/unique-by.js",
+      "default": "./dist/utils/unique-by.js",
+      "types": "./dist/utils/unique-by.d.ts"
     },
     "./test-utils": {
       "import": "./dist/test-utils/index.js",

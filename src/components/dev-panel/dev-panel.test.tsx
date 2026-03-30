@@ -54,23 +54,34 @@ describe('DevPanel', () => {
     )
   })
 
+  const overlayAttrs = [
+    'data-react-shared-dev-panel-outline',
+    'data-react-shared-dev-panel-grid',
+    'data-react-shared-dev-panel-slow-mo',
+    'data-react-shared-dev-panel-focus-rings',
+    'data-react-shared-dev-panel-no-anim',
+  ]
+  const styleIds = [
+    'react-shared-dev-panel-outline-style',
+    'react-shared-dev-panel-grid-style',
+    'react-shared-dev-panel-slow-mo-style',
+    'react-shared-dev-panel-focus-rings-style',
+    'react-shared-dev-panel-no-anim-style',
+  ]
+
   afterEach(() => {
     vi.unstubAllGlobals()
     vi.unstubAllEnvs()
-    document.documentElement.removeAttribute(
-      'data-react-shared-dev-panel-outline'
-    )
-    document.documentElement.removeAttribute('data-react-shared-dev-panel-grid')
-    document.getElementById('react-shared-dev-panel-outline-style')?.remove()
-    document.getElementById('react-shared-dev-panel-grid-style')?.remove()
+    overlayAttrs.forEach((a) => document.documentElement.removeAttribute(a))
+    styleIds.forEach((id) => document.getElementById(id)?.remove())
   })
 
   it('renders core metrics only when features is an empty list', () => {
     render(<DevPanel features={[]} />)
 
-    expect(screen.getByText('md')).toBeInTheDocument()
-    expect(screen.getByText('820×640')).toBeInTheDocument()
-    expect(screen.getByText('light')).toBeInTheDocument()
+    expect(screen.getByText('MD')).toBeInTheDocument()
+    expect(screen.getByText('820\u00d7640')).toBeInTheDocument()
+    expect(screen.getByText('Light')).toBeInTheDocument()
     expect(screen.queryByTitle('devicePixelRatio')).not.toBeInTheDocument()
   })
 
@@ -83,7 +94,7 @@ describe('DevPanel', () => {
       screen.getByTitle('prefers-color-scheme vs resolved theme')
     ).toBeInTheDocument()
     expect(
-      screen.getByTitle('window.scrollY and documentElement.scrollHeight')
+      screen.getByTitle('window.scrollY / documentElement.scrollHeight')
     ).toBeInTheDocument()
     expect(screen.getByTitle('navigator.onLine')).toBeInTheDocument()
   })
@@ -99,20 +110,19 @@ describe('DevPanel', () => {
     expect(screen.getByText('feature-x')).toBeInTheDocument()
   })
 
-  it('collapses to a compact pill when the close button is clicked', () => {
+  it('animates to collapsed state when the close button is clicked', () => {
     render(<DevPanel />)
 
     fireEvent.click(screen.getByTitle('Collapse'))
 
-    expect(screen.getByTitle(/dev panel \(shift\+d\)/i)).toBeInTheDocument()
-    expect(screen.queryByTitle('devicePixelRatio')).not.toBeInTheDocument()
+    expect(screen.getByTitle(/dev panel/i)).toBeInTheDocument()
   })
 
-  it('reopens when the collapsed pill is clicked', () => {
+  it('reopens when the collapsed panel is clicked', () => {
     render(<DevPanel />)
 
     fireEvent.click(screen.getByTitle('Collapse'))
-    fireEvent.click(screen.getByTitle(/dev panel \(shift\+d\)/i))
+    fireEvent.click(screen.getByTitle(/dev panel/i))
 
     expect(screen.getByTitle('devicePixelRatio')).toBeInTheDocument()
   })
@@ -122,7 +132,7 @@ describe('DevPanel', () => {
 
     render(<DevPanel />)
 
-    expect(screen.getByTitle(/dev panel \(shift\+d\)/i)).toBeInTheDocument()
+    expect(screen.getByTitle(/dev panel/i)).toBeInTheDocument()
   })
 
   it('resolves an explicit light class before the system preference', () => {
@@ -130,9 +140,7 @@ describe('DevPanel', () => {
 
     render(<DevPanel />)
 
-    expect(screen.getByTitle('Resolved app / system theme')).toHaveTextContent(
-      'light'
-    )
+    expect(screen.getByTitle('Theme: Light')).toHaveTextContent('Light')
   })
 
   it('renders nothing in production', () => {
@@ -140,6 +148,6 @@ describe('DevPanel', () => {
 
     render(<DevPanel />)
 
-    expect(screen.queryByText('md')).not.toBeInTheDocument()
+    expect(screen.queryByText('MD')).not.toBeInTheDocument()
   })
 })
