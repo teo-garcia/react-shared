@@ -315,10 +315,10 @@
     "tailwind-merge": "^3.0.0"
   },
   "peerDependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
     "@tanstack/react-query": "^5.0.0",
-    "@testing-library/react": "^16.0.0"
+    "@testing-library/react": "^16.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "peerDependenciesMeta": {
     "@tanstack/react-query": {
@@ -329,8 +329,8 @@
     }
   },
   "devDependencies": {
-    "@teo-garcia/prettier-config-shared": "^0.2.9",
     "@tanstack/react-query": "^5.0.0",
+    "@teo-garcia/prettier-config-shared": "^0.2.9",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/node": "^24.0.0",
@@ -338,6 +338,8 @@
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^5.0.4",
     "happy-dom": "^16.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.3",
     "prettier": "^3.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -352,6 +354,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "prepublishOnly": "pnpm build"
+    "prepublishOnly": "pnpm build",
+    "prepare": "husky"
   }
 }
