@@ -349,10 +349,13 @@
   },
   "scripts": {
     "build": "rm -rf dist && tsc",
+    "build:playground": "pnpm --dir playground build",
     "check": "pnpm format:check && pnpm build && pnpm test",
     "coverage": "vitest run --coverage",
+    "dev:playground": "pnpm --dir playground dev",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "preview:playground": "pnpm --dir playground preview",
     "test": "vitest run",
     "prepublishOnly": "pnpm build",
     "prepare": "husky"

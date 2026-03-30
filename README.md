@@ -28,82 +28,82 @@ inline styles are used throughout.
 
 ## Components
 
-| Component        | Description                                               |
-| ---------------- | --------------------------------------------------------- |
-| `AspectRatio`    | Maintains a fixed width-to-height ratio for content       |
-| `ClientOnly`     | Renders children only after hydration                     |
-| `DebugJSON`      | Dev-only collapsible JSON viewer                          |
+| Component        | Description                                                 |
+| ---------------- | ----------------------------------------------------------- |
+| `AspectRatio`    | Maintains a fixed width-to-height ratio for content         |
+| `ClientOnly`     | Renders children only after hydration                       |
+| `DebugJSON`      | Dev-only collapsible JSON viewer                            |
 | `DevPanel`       | Dev-only overlay with viewport, breakpoint, and diagnostics |
-| `ErrorBoundary`  | Class-based boundary with multiple fallback strategies    |
-| `FocusTrap`      | Traps keyboard focus within a container                   |
-| `Portal`         | Renders children into a DOM node outside the tree         |
-| `Separator`      | Semantic `<hr>` with orientation support                  |
-| `Show`           | Conditional rendering primitive with render-prop support  |
-| `Skeleton`       | Pulse animation placeholder                               |
-| `SkipLink`       | WCAG 2.4.1 skip navigation link                          |
-| `VisuallyHidden` | Screen-reader-only content                                |
+| `ErrorBoundary`  | Class-based boundary with multiple fallback strategies      |
+| `FocusTrap`      | Traps keyboard focus within a container                     |
+| `Portal`         | Renders children into a DOM node outside the tree           |
+| `Separator`      | Semantic `<hr>` with orientation support                    |
+| `Show`           | Conditional rendering primitive with render-prop support    |
+| `Skeleton`       | Pulse animation placeholder                                 |
+| `SkipLink`       | WCAG 2.4.1 skip navigation link                             |
+| `VisuallyHidden` | Screen-reader-only content                                  |
 
 ---
 
 ## Hooks
 
-| Hook                       | Description                                      |
-| -------------------------- | ------------------------------------------------ |
-| `useBreakpoint`            | Viewport dimensions and Tailwind-style breakpoint |
-| `useCopyToClipboard`       | Clipboard write with auto-reset copied state     |
-| `useCounter`               | Numeric state with increment, decrement, bounds  |
-| `useDebounce`              | Debounce a value by delay                        |
-| `useDocumentTitle`         | Set document title, restore on unmount           |
-| `useEventListener`         | Typed event listener with stable handler ref     |
-| `useHover`                 | Pointer hover detection for a ref                |
-| `useIdle`                  | User inactivity detection                        |
-| `useInterval`              | Declarative setInterval with pause support       |
-| `useIntersectionObserver`  | Viewport intersection tracking                   |
-| `useIsomorphicLayoutEffect`| SSR-safe useLayoutEffect                         |
-| `useKeyPress`              | Key press detection with modifier support        |
-| `useLatest`                | Ref always pointing to the latest value          |
-| `useLocalStorage`          | Typed localStorage with JSON serialization       |
-| `useMeasure`               | Element bounding rect via ResizeObserver         |
-| `useMediaQuery`            | Reactive CSS media query matching                |
-| `useNetworkStatus`         | Online/offline detection                         |
-| `useOnClickOutside`        | Click outside detection for a ref                |
-| `usePrevious`              | Previous value of a changing variable            |
-| `useRenderCount`           | Dev-only render counter with console logging     |
-| `useScrollLock`            | Lock/unlock body scrolling                       |
-| `useThrottle`              | Throttle a value by delay                        |
-| `useTimeout`               | Declarative setTimeout with clear and reset      |
-| `useToggle`                | Boolean state with toggle, setOn, setOff         |
-| `useWhyDidYouRender`       | Dev-only prop change logger                      |
+| Hook                        | Description                                       |
+| --------------------------- | ------------------------------------------------- |
+| `useBreakpoint`             | Viewport dimensions and Tailwind-style breakpoint |
+| `useCopyToClipboard`        | Clipboard write with auto-reset copied state      |
+| `useCounter`                | Numeric state with increment, decrement, bounds   |
+| `useDebounce`               | Debounce a value by delay                         |
+| `useDocumentTitle`          | Set document title, restore on unmount            |
+| `useEventListener`          | Typed event listener with stable handler ref      |
+| `useHover`                  | Pointer hover detection for a ref                 |
+| `useIdle`                   | User inactivity detection                         |
+| `useInterval`               | Declarative setInterval with pause support        |
+| `useIntersectionObserver`   | Viewport intersection tracking                    |
+| `useIsomorphicLayoutEffect` | SSR-safe useLayoutEffect                          |
+| `useKeyPress`               | Key press detection with modifier support         |
+| `useLatest`                 | Ref always pointing to the latest value           |
+| `useLocalStorage`           | Typed localStorage with JSON serialization        |
+| `useMeasure`                | Element bounding rect via ResizeObserver          |
+| `useMediaQuery`             | Reactive CSS media query matching                 |
+| `useNetworkStatus`          | Online/offline detection                          |
+| `useOnClickOutside`         | Click outside detection for a ref                 |
+| `usePrevious`               | Previous value of a changing variable             |
+| `useRenderCount`            | Dev-only render counter with console logging      |
+| `useScrollLock`             | Lock/unlock body scrolling                        |
+| `useThrottle`               | Throttle a value by delay                         |
+| `useTimeout`                | Declarative setTimeout with clear and reset       |
+| `useToggle`                 | Boolean state with toggle, setOn, setOff          |
+| `useWhyDidYouRender`        | Dev-only prop change logger                       |
 
 ---
 
 ## Utilities
 
-| Utility            | Description                                          |
-| ------------------ | ---------------------------------------------------- |
-| `capitalize`       | Uppercase the first character of a string            |
-| `clamp`            | Clamp a number between min and max                   |
-| `cn`               | Merge class names via clsx + tailwind-merge          |
+| Utility             | Description                                          |
+| ------------------- | ---------------------------------------------------- |
+| `capitalize`        | Uppercase the first character of a string            |
+| `clamp`             | Clamp a number between min and max                   |
+| `cn`                | Merge class names via clsx + tailwind-merge          |
 | `createSafeContext` | Typed React context with descriptive error on misuse |
-| `formatDate`       | Intl.DateTimeFormat wrapper with sensible defaults   |
-| `formatNumber`     | Intl.NumberFormat wrapper with sensible defaults     |
-| `groupBy`          | Group array elements by a key function               |
-| `invariant`        | Runtime assertion that throws on falsy conditions    |
-| `isClient`         | Boolean: true in browser environments                |
-| `isServer`         | Boolean: true in server environments                 |
-| `noop`             | No-op function for default callbacks                 |
-| `sleep`            | Promise that resolves after a delay                  |
-| `truncate`         | Truncate a string with configurable suffix           |
-| `uniqueBy`         | Deduplicate an array by a key function               |
+| `formatDate`        | Intl.DateTimeFormat wrapper with sensible defaults   |
+| `formatNumber`      | Intl.NumberFormat wrapper with sensible defaults     |
+| `groupBy`           | Group array elements by a key function               |
+| `invariant`         | Runtime assertion that throws on falsy conditions    |
+| `isClient`          | Boolean: true in browser environments                |
+| `isServer`          | Boolean: true in server environments                 |
+| `noop`              | No-op function for default callbacks                 |
+| `sleep`             | Promise that resolves after a delay                  |
+| `truncate`          | Truncate a string with configurable suffix           |
+| `uniqueBy`          | Deduplicate an array by a key function               |
 
 ---
 
 ## Test Utilities
 
-| Export                | Description                                   |
-| --------------------- | --------------------------------------------- |
-| `createWrapper`       | React Query provider wrapper for renderHook   |
-| `renderWithProviders` | render() pre-wrapped with React Query         |
+| Export                | Description                                 |
+| --------------------- | ------------------------------------------- |
+| `createWrapper`       | React Query provider wrapper for renderHook |
+| `renderWithProviders` | render() pre-wrapped with React Query       |
 
 Requires `@tanstack/react-query` and `@testing-library/react` as optional peer
 dependencies.
@@ -112,8 +112,8 @@ dependencies.
 
 ## DevPanel
 
-Development-only floating overlay that surfaces viewport, breakpoint, theme,
-and configurable diagnostics. Features beyond what Chrome DevTools provides:
+Development-only floating overlay that surfaces viewport, breakpoint, theme, and
+configurable diagnostics. Features beyond what Chrome DevTools provides:
 
 - Tailwind breakpoint indicator
 - Theme detection (class, data attribute, system preference)
@@ -130,6 +130,29 @@ and configurable diagnostics. Features beyond what Chrome DevTools provides:
 - Keyboard toggle (Shift + D by default)
 
 Returns `null` in production builds.
+
+---
+
+## Playground
+
+Use the built-in playground for fast local debugging without spinning up a full
+consumer app:
+
+```bash
+cd playground
+pnpm install
+pnpm dev
+```
+
+Or from the package root:
+
+```bash
+pnpm dev:playground
+```
+
+The playground is intentionally minimal and focused on `DevPanel`. It aliases
+`@teo-garcia/react-shared` to local `src/`, so edits inside
+`src/components/dev-panel/*` hot-reload immediately.
 
 ---
 
