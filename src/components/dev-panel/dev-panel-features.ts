@@ -2,7 +2,9 @@
  * Optional diagnostics toggles for {@link DevPanel}. Subscribe only to what you pass.
  */
 export type DevPanelFeature =
+  | 'baseline'
   | 'colorScheme'
+  | 'cols'
   | 'connection'
   | 'contrast'
   | 'displayMode'
@@ -11,7 +13,6 @@ export type DevPanelFeature =
   | 'focus'
   | 'focusRings'
   | 'fullscreen'
-  | 'grid'
   | 'inverted'
   | 'locale'
   | 'media'
@@ -36,7 +37,9 @@ export type DevPanelFeature =
  * Pass `features={[]}` for viewport, breakpoint, and theme only.
  */
 export const ALL_DEV_PANEL_FEATURES: readonly DevPanelFeature[] = [
+  'baseline',
   'colorScheme',
+  'cols',
   'connection',
   'contrast',
   'displayMode',
@@ -45,7 +48,6 @@ export const ALL_DEV_PANEL_FEATURES: readonly DevPanelFeature[] = [
   'focus',
   'focusRings',
   'fullscreen',
-  'grid',
   'inverted',
   'locale',
   'media',

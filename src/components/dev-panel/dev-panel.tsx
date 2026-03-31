@@ -33,7 +33,8 @@ export {
 /* ------------------------------------------------------------------ */
 
 const OUTLINE_STYLE_ID = 'react-shared-dev-panel-outline-style'
-const GRID_STYLE_ID = 'react-shared-dev-panel-grid-style'
+const BASELINE_STYLE_ID = 'react-shared-dev-panel-baseline-style'
+const COLS_STYLE_ID = 'react-shared-dev-panel-cols-style'
 const SLOW_MO_STYLE_ID = 'react-shared-dev-panel-slow-mo-style'
 const FOCUS_RINGS_STYLE_ID = 'react-shared-dev-panel-focus-rings-style'
 const NO_ANIM_STYLE_ID = 'react-shared-dev-panel-no-anim-style'
@@ -116,15 +117,7 @@ export interface DevPanelItem {
   value: ReactNode
 }
 
-export type DevPanelLayoutMode =
-  | 'off'
-  | '8px'
-  | '3'
-  | '6'
-  | '9'
-  | '12'
-  | '24'
-  | 'many'
+export type DevPanelColsMode = 'off' | '2' | '3' | '4' | '6' | '8' | '12'
 
 export interface DevPanelProps {
   breakpoints?: Record<string, number>
@@ -136,28 +129,25 @@ export interface DevPanelProps {
   storageKey?: string
 }
 
-const DEV_PANEL_LAYOUT_MODES: readonly DevPanelLayoutMode[] = [
+const DEV_PANEL_COLS_MODES: readonly DevPanelColsMode[] = [
   'off',
-  '8px',
+  '2',
   '3',
+  '4',
   '6',
-  '9',
+  '8',
   '12',
-  '24',
-  'many',
 ]
 
-const DEV_PANEL_COLUMN_COUNTS: Record<
-  Exclude<DevPanelLayoutMode, 'off' | '8px'>,
+const DEV_PANEL_COLS_COUNTS: Record<
+  Exclude<DevPanelColsMode, 'off'>,
   number
-> = {
-  '3': 3,
-  '6': 6,
-  '9': 9,
-  '12': 12,
-  '24': 24,
-  many: 48,
-}
+> = { '2': 2, '3': 3, '4': 4, '6': 6, '8': 8, '12': 12 }
+
+/** Maximum CSS z-index (2^31 − 1). Panel must render above all page content. */
+const Z_PANEL = 2147483647
+/** One step below Z_PANEL so overlays are visible but stay beneath the panel shell. */
+const Z_OVERLAY = Z_PANEL - 1
 
 /* ------------------------------------------------------------------ */
 /*  Health                                                            */
@@ -302,28 +292,13 @@ function formatMetricLabel(label: string): string {
   return label.replace(/\b\w/g, (char) => char.toUpperCase())
 }
 
-function getNextLayoutMode(mode: DevPanelLayoutMode): DevPanelLayoutMode {
-  const currentIndex = DEV_PANEL_LAYOUT_MODES.indexOf(mode)
-  const nextIndex = (currentIndex + 1) % DEV_PANEL_LAYOUT_MODES.length
-  return DEV_PANEL_LAYOUT_MODES[nextIndex]
+function getNextColsMode(mode: DevPanelColsMode): DevPanelColsMode {
+  const i = DEV_PANEL_COLS_MODES.indexOf(mode)
+  return DEV_PANEL_COLS_MODES[(i + 1) % DEV_PANEL_COLS_MODES.length]
 }
 
-function getLayoutModeLabel(mode: DevPanelLayoutMode): string {
-  if (mode === 'off') return 'off'
-  if (mode === '8px') return '8px'
-  return mode === 'many' ? '48 cols' : `${mode} cols`
-}
-
-function getLayoutModeTitle(mode: DevPanelLayoutMode): string {
-  const nextMode = getNextLayoutMode(mode)
-  const nextLabel = getLayoutModeLabel(nextMode)
-  if (mode === 'off')
-    return `Layout overlay disabled; click to enable ${nextLabel}`
-  if (mode === '8px')
-    return `8px baseline grid overlay; click to cycle to ${nextLabel}`
-  if (mode === 'many')
-    return `48-column dense overlay; click to cycle to ${nextLabel}`
-  return `${mode}-column overlay; click to cycle to ${nextLabel}`
+function getColsModeLabel(mode: DevPanelColsMode): string {
+  return mode === 'off' ? 'off' : `${mode}`
 }
 
 /* ------------------------------------------------------------------ */
@@ -583,7 +558,8 @@ function DevPanelInner({
   const { breakpoint, height, width } = useBreakpoint(breakpoints)
   const [open, setOpen] = useState(true)
   const [outlineOn, setOutlineOn] = useState(false)
-  const [layoutMode, setLayoutMode] = useState<DevPanelLayoutMode>('off')
+  const [baselineOn, setBaselineOn] = useState(false)
+  const [colsMode, setColsMode] = useState<DevPanelColsMode>('off')
   const [slowMoOn, setSlowMoOn] = useState(false)
   const [focusRingsOn, setFocusRingsOn] = useState(false)
   const [noAnimOn, setNoAnimOn] = useState(false)
@@ -613,54 +589,60 @@ function DevPanelInner({
     return () => document.documentElement.removeAttribute(attr)
   }, [featureSet, outlineOn])
 
-  /* -- Overlay: Grid -- */
+  /* -- Overlay: Baseline grid -- */
   useEffect(() => {
     if (typeof document === 'undefined') return
-    const attr = 'data-react-shared-dev-panel-grid'
-    const modeAttr = 'data-react-shared-dev-panel-layout-mode'
-    const kindAttr = 'data-react-shared-dev-panel-layout-kind'
-    if (!featureSet.has('grid')) {
+    const attr = 'data-react-shared-dev-panel-baseline'
+    if (!featureSet.has('baseline')) {
       document.documentElement.removeAttribute(attr)
-      document.documentElement.removeAttribute(modeAttr)
-      document.documentElement.removeAttribute(kindAttr)
-      document.documentElement.style.removeProperty(
-        '--react-shared-dev-panel-layout-columns'
-      )
-      document.getElementById(GRID_STYLE_ID)?.remove()
+      document.getElementById(BASELINE_STYLE_ID)?.remove()
       return
     }
     injectStyleOnce(
-      GRID_STYLE_ID,
-      `html[${attr}]::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:2147483645; }
-html[${attr}][${kindAttr}="baseline"]::before { background-size:8px 8px; background-image: linear-gradient(to right,rgba(148,163,184,0.14) 1px,transparent 1px), linear-gradient(to bottom,rgba(148,163,184,0.14) 1px,transparent 1px); }
-html[${attr}][${kindAttr}="columns"]::before { background-size:calc(100% / var(--react-shared-dev-panel-layout-columns)) 100%; background-repeat:repeat; background-image:linear-gradient(to right,rgba(56,189,248,0.08) 0 calc(100% - 1px),rgba(245,158,11,0.42) calc(100% - 1px) 100%); }`
+      BASELINE_STYLE_ID,
+      `html[${attr}]::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:${Z_OVERLAY}; background-size:8px 8px; background-image:linear-gradient(to right,rgba(148,163,184,0.14) 1px,transparent 1px),linear-gradient(to bottom,rgba(148,163,184,0.14) 1px,transparent 1px); }`
+    )
+    setAttr(attr, baselineOn)
+    return () => document.documentElement.removeAttribute(attr)
+  }, [featureSet, baselineOn])
+
+  /* -- Overlay: Column grid -- */
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    const attr = 'data-react-shared-dev-panel-cols'
+    const colsAttr = 'data-react-shared-dev-panel-cols-count'
+    if (!featureSet.has('cols')) {
+      document.documentElement.removeAttribute(attr)
+      document.documentElement.removeAttribute(colsAttr)
+      document.documentElement.style.removeProperty(
+        '--react-shared-dev-panel-cols'
+      )
+      document.getElementById(COLS_STYLE_ID)?.remove()
+      return
+    }
+    injectStyleOnce(
+      COLS_STYLE_ID,
+      `html[${attr}]::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:${Z_OVERLAY}; background-size:calc((100% + 8px) / var(--react-shared-dev-panel-cols)) 100%; background-repeat:repeat-x; background-image:linear-gradient(to right,rgba(56,189,248,0.12) 0 calc(100% - 8px),transparent calc(100% - 8px)); }`
     )
     const root = document.documentElement
-    const enabled = layoutMode !== 'off'
+    const enabled = colsMode !== 'off'
     setAttr(attr, enabled)
     if (!enabled) {
-      root.removeAttribute(modeAttr)
-      root.removeAttribute(kindAttr)
-      root.style.removeProperty('--react-shared-dev-panel-layout-columns')
-    } else if (layoutMode === '8px') {
-      root.setAttribute(modeAttr, layoutMode)
-      root.setAttribute(kindAttr, 'baseline')
-      root.style.removeProperty('--react-shared-dev-panel-layout-columns')
+      root.removeAttribute(colsAttr)
+      root.style.removeProperty('--react-shared-dev-panel-cols')
     } else {
-      root.setAttribute(modeAttr, layoutMode)
-      root.setAttribute(kindAttr, 'columns')
+      root.setAttribute(colsAttr, colsMode)
       root.style.setProperty(
-        '--react-shared-dev-panel-layout-columns',
-        String(DEV_PANEL_COLUMN_COUNTS[layoutMode])
+        '--react-shared-dev-panel-cols',
+        String(DEV_PANEL_COLS_COUNTS[colsMode])
       )
     }
     return () => {
       root.removeAttribute(attr)
-      root.removeAttribute(modeAttr)
-      root.removeAttribute(kindAttr)
-      root.style.removeProperty('--react-shared-dev-panel-layout-columns')
+      root.removeAttribute(colsAttr)
+      root.style.removeProperty('--react-shared-dev-panel-cols')
     }
-  }, [featureSet, layoutMode])
+  }, [featureSet, colsMode])
 
   /* -- Overlay: Slow Mo -- */
   useEffect(() => {
@@ -746,7 +728,8 @@ html[${attr}][${kindAttr}="columns"]::before { background-size:calc(100% / var(-
   /* -- Copy diagnostics -- */
   const copyDiagnostics = useCallback(() => {
     const payload = {
-      layoutOverlayMode: layoutMode,
+      baselineOverlay: baselineOn,
+      colsOverlay: colsMode,
       viewport: `${width}\u00d7${height}`,
       breakpoint,
       theme: resolvedTheme,
@@ -759,12 +742,21 @@ html[${attr}][${kindAttr}="columns"]::before { background-size:calc(100% / var(-
         setTimeout(() => setCopied(false), 1400)
       })
       .catch(() => {})
-  }, [layoutMode, width, height, breakpoint, resolvedTheme, diagnostics])
+  }, [
+    baselineOn,
+    colsMode,
+    width,
+    height,
+    breakpoint,
+    resolvedTheme,
+    diagnostics,
+  ])
 
   const sections = buildSections(diagnostics, featureSet, items, panelTheme)
   const hasTools =
     featureSet.has('outline') ||
-    featureSet.has('grid') ||
+    featureSet.has('baseline') ||
+    featureSet.has('cols') ||
     featureSet.has('slowMo') ||
     featureSet.has('focusRings') ||
     featureSet.has('noAnimations')
@@ -795,14 +787,29 @@ html[${attr}][${kindAttr}="columns"]::before { background-size:calc(100% / var(-
           toggle: () => setOutlineOn((v) => !v),
         }
       : null,
-    featureSet.has('grid')
+    featureSet.has('baseline')
       ? {
-          feature: 'grid' as DevPanelFeature,
+          feature: 'baseline' as DevPanelFeature,
           icon: <Ico paths={ICO_GRID} />,
-          label: `Layout ${getLayoutModeLabel(layoutMode)}`,
-          on: layoutMode !== 'off',
-          title: getLayoutModeTitle(layoutMode),
-          toggle: () => setLayoutMode((value) => getNextLayoutMode(value)),
+          label: 'Baseline',
+          on: baselineOn,
+          title: baselineOn
+            ? '8px grid on; click to disable'
+            : '8px baseline grid; click to enable',
+          toggle: () => setBaselineOn((v) => !v),
+        }
+      : null,
+    featureSet.has('cols')
+      ? {
+          feature: 'cols' as DevPanelFeature,
+          icon: <Ico paths={ICO_GRID} />,
+          label: `Cols ${getColsModeLabel(colsMode)}`,
+          on: colsMode !== 'off',
+          title:
+            colsMode === 'off'
+              ? 'Columns off; click to cycle'
+              : `${colsMode}-column overlay; click to cycle`,
+          toggle: () => setColsMode((v) => getNextColsMode(v)),
         }
       : null,
     featureSet.has('slowMo')
@@ -849,7 +856,8 @@ html[${attr}][${kindAttr}="columns"]::before { background-size:calc(100% / var(-
     <div
       aria-expanded={open}
       aria-label='Development panel'
-      className='fixed bottom-4 right-4 z-[9999] flex flex-col items-end'
+      className='fixed bottom-4 right-4 flex flex-col items-end'
+      style={{ zIndex: Z_PANEL }}
       onClick={open ? undefined : () => setOpen(true)}
       onKeyDown={
         open
@@ -997,13 +1005,13 @@ html[${attr}][${kindAttr}="columns"]::before { background-size:calc(100% / var(-
           >
             {hasTools && tools.length > 0 && (
               <div
-                className={`flex flex-wrap items-center gap-x-3 gap-y-1 border-b px-3 py-2 ${themeClasses.divider}`}
+                className={`grid grid-cols-3 border-b px-3 py-1.5 ${themeClasses.divider}`}
               >
                 {tools.map((tool) => (
                   <button
                     key={tool.feature}
                     aria-pressed={tool.on}
-                    className={`inline-flex items-center gap-1.5 text-[11px] font-medium transition-colors ${
+                    className={`inline-flex items-center gap-1.5 py-1 text-[11px] font-medium transition-colors ${
                       tool.on ? toolOnClass : toolOffClass
                     }`}
                     onClick={(e) => {

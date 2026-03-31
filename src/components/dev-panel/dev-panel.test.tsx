@@ -56,14 +56,16 @@ describe('DevPanel', () => {
 
   const overlayAttrs = [
     'data-react-shared-dev-panel-outline',
-    'data-react-shared-dev-panel-grid',
+    'data-react-shared-dev-panel-baseline',
+    'data-react-shared-dev-panel-cols',
     'data-react-shared-dev-panel-slow-mo',
     'data-react-shared-dev-panel-focus-rings',
     'data-react-shared-dev-panel-no-anim',
   ]
   const styleIds = [
     'react-shared-dev-panel-outline-style',
-    'react-shared-dev-panel-grid-style',
+    'react-shared-dev-panel-baseline-style',
+    'react-shared-dev-panel-cols-style',
     'react-shared-dev-panel-slow-mo-style',
     'react-shared-dev-panel-focus-rings-style',
     'react-shared-dev-panel-no-anim-style',
@@ -120,43 +122,56 @@ describe('DevPanel', () => {
     expect(screen.getByText('feature-x')).toBeInTheDocument()
   })
 
-  it('cycles the layout overlay modes', () => {
-    render(<DevPanel features={['grid']} />)
+  it('toggles the baseline overlay', () => {
+    render(<DevPanel features={['baseline']} />)
 
-    const layoutButton = screen.getByRole('button', { name: /Layout off/i })
+    const btn = screen.getByRole('button', { name: /Baseline/i })
 
-    fireEvent.click(layoutButton)
+    fireEvent.click(btn)
     expect(
-      document.documentElement.getAttribute('data-react-shared-dev-panel-grid')
+      document.documentElement.getAttribute(
+        'data-react-shared-dev-panel-baseline'
+      )
+    ).toBe('')
+
+    fireEvent.click(btn)
+    expect(
+      document.documentElement.hasAttribute(
+        'data-react-shared-dev-panel-baseline'
+      )
+    ).toBe(false)
+  })
+
+  it('cycles the column overlay modes', () => {
+    render(<DevPanel features={['cols']} />)
+
+    const colsButton = screen.getByRole('button', { name: /Cols off/i })
+
+    fireEvent.click(colsButton)
+    expect(
+      document.documentElement.getAttribute('data-react-shared-dev-panel-cols')
     ).toBe('')
     expect(
       document.documentElement.getAttribute(
-        'data-react-shared-dev-panel-layout-mode'
+        'data-react-shared-dev-panel-cols-count'
       )
-    ).toBe('8px')
+    ).toBe('2')
 
-    fireEvent.click(screen.getByRole('button', { name: /Layout 8px/i }))
-    expect(
-      document.documentElement.getAttribute(
-        'data-react-shared-dev-panel-layout-mode'
-      )
-    ).toBe('3')
-
-    fireEvent.click(screen.getByRole('button', { name: /Layout 3/i }))
-    fireEvent.click(screen.getByRole('button', { name: /Layout 6/i }))
-    fireEvent.click(screen.getByRole('button', { name: /Layout 9/i }))
-    fireEvent.click(screen.getByRole('button', { name: /Layout 12/i }))
-    fireEvent.click(screen.getByRole('button', { name: /Layout 24/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Cols 2/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Cols 3/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Cols 4/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Cols 6/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Cols 8/i }))
 
     expect(
       document.documentElement.style.getPropertyValue(
-        '--react-shared-dev-panel-layout-columns'
+        '--react-shared-dev-panel-cols'
       )
-    ).toBe('48')
+    ).toBe('12')
 
-    fireEvent.click(screen.getByRole('button', { name: /Layout 48/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Cols 12/i }))
     expect(
-      document.documentElement.hasAttribute('data-react-shared-dev-panel-grid')
+      document.documentElement.hasAttribute('data-react-shared-dev-panel-cols')
     ).toBe(false)
   })
 
