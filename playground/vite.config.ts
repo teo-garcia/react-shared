@@ -1,5 +1,6 @@
 import path from 'node:path'
 
+import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
@@ -9,6 +10,7 @@ const packageRoot = path.resolve(__dirname, '..')
 export default defineConfig({
   root: __dirname,
   plugins: [
+    tailwindcss(),
     react(),
     tsconfigPaths({
       projects: ['./tsconfig.json'],

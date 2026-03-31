@@ -3,6 +3,5 @@ export {
   DevPanel,
   type DevPanelFeature,
   type DevPanelItem,
-  type DevPanelLayout,
   type DevPanelProps,
 } from './dev-panel.js'

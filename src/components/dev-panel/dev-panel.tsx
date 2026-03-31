@@ -5,7 +5,6 @@ import {
   useEffect,
   useMemo,
   useState,
-  type CSSProperties,
   type ReactNode,
 } from 'react'
 
@@ -38,56 +37,10 @@ const GRID_STYLE_ID = 'react-shared-dev-panel-grid-style'
 const SLOW_MO_STYLE_ID = 'react-shared-dev-panel-slow-mo-style'
 const FOCUS_RINGS_STYLE_ID = 'react-shared-dev-panel-focus-rings-style'
 const NO_ANIM_STYLE_ID = 'react-shared-dev-panel-no-anim-style'
-const SCROLLBAR_STYLE_ID = 'react-shared-dev-panel-scrollbar-style'
 
-const MONO =
-  'ui-monospace, "SFMono-Regular", "Cascadia Code", "Fira Code", monospace'
-const SANS =
-  '-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, sans-serif'
-
-const TRANSITION_MS = 220
-
-/* ------------------------------------------------------------------ */
-/*  Inline SVG icons                                                  */
-/* ------------------------------------------------------------------ */
-
-function Ico({
-  d,
-  paths,
-  size = 14,
-  fill,
-}: {
-  d?: string
-  fill?: string
-  paths?: string[]
-  size?: number
-}) {
-  return (
-    <svg
-      xmlns='http://www.w3.org/2000/svg'
-      width={size}
-      height={size}
-      viewBox='0 0 24 24'
-      fill={fill ?? 'none'}
-      stroke='currentColor'
-      strokeWidth={1.8}
-      strokeLinecap='round'
-      strokeLinejoin='round'
-      style={{ display: 'block', flexShrink: 0 }}
-    >
-      {d ? <path d={d} /> : null}
-      {paths?.map((p, i) => (
-        <path key={i} d={p} />
-      ))}
-    </svg>
-  )
-}
-
-const ICO_CHEVRON = 'M6 9l6 6 6-6'
 const ICO_COPY =
   'M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2v-2M16 4h2a2 2 0 012 2v6M12 2h4l4 4v2M12 2v4a2 2 0 002 2h4'
 const ICO_CHECK = 'M5 12l5 5L20 7'
-
 const ICO_OUTLINE = [
   'M3 3h18v18H3z',
   'M9 3v18',
@@ -119,29 +72,38 @@ const ICO_NO_ANIM = [
   'M12 2a10 10 0 100 20 10 10 0 000-20z',
 ]
 
-const SECTION_ICONS: Record<string, string[]> = {
-  Performance: ['M13 2L3 14h9l-1 8 10-12h-9l1-8z'],
-  Layout: ['M3 3h18v18H3z', 'M3 9h18', 'M9 21V9'],
-  Display: [
-    'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z',
-    'M12 9a3 3 0 100 6 3 3 0 000-6z',
-  ],
-  Input: ['M12 19V5', 'M5 12l7-7 7 7'],
-  Network: [
-    'M5 12.55a11 11 0 0114 0',
-    'M8.53 16.11a6 6 0 016.95 0',
-    'M12 20h.01',
-  ],
-  Runtime: ['M5 3l14 9-14 9V3z'],
-  Locale: [
-    'M12 2a10 10 0 100 20 10 10 0 000-20z',
-    'M2 12h20',
-    'M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z',
-  ],
-  DOM: ['M16 18l6-6-6-6', 'M8 6l-6 6 6 6'],
-  App: [
-    'M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z',
-  ],
+/* ------------------------------------------------------------------ */
+/*  SVG icon helper                                                   */
+/* ------------------------------------------------------------------ */
+
+function Ico({
+  d,
+  paths,
+  size = 14,
+}: {
+  d?: string
+  paths?: string[]
+  size?: number
+}) {
+  return (
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      width={size}
+      height={size}
+      viewBox='0 0 24 24'
+      fill='none'
+      stroke='currentColor'
+      strokeWidth={1.8}
+      strokeLinecap='round'
+      strokeLinejoin='round'
+      className='block shrink-0'
+    >
+      {d ? <path d={d} /> : null}
+      {paths?.map((p, i) => (
+        <path key={i} d={p} />
+      ))}
+    </svg>
+  )
 }
 
 /* ------------------------------------------------------------------ */
@@ -154,103 +116,14 @@ export interface DevPanelItem {
   value: ReactNode
 }
 
-export type DevPanelLayout = 'hud' | 'inspector' | 'stack'
-
 export interface DevPanelProps {
   breakpoints?: Record<string, number>
   children?: ReactNode
   /** Defaults to {@link ALL_DEV_PANEL_FEATURES}. Pass `[]` for core metrics only. */
   features?: DevPanelFeature[]
   items?: DevPanelItem[]
-  layout?: DevPanelLayout
   shortcut?: string
   storageKey?: string
-}
-
-/* ------------------------------------------------------------------ */
-/*  Theme (INVERTED: dark panel on light pages, light on dark)        */
-/* ------------------------------------------------------------------ */
-
-interface Theme {
-  accent: string
-  badge: string
-  badgeText: string
-  bg: string
-  border: string
-  divider: string
-  icon: string
-  sectionIcon: string
-  shadow: string
-  shadowCompact: string
-  surface: string
-  surfaceStrong: string
-  surfaceTint: string
-  scrollThumb: string
-  scrollThumbHover: string
-  scrollTrack: string
-  text: string
-  textDim: string
-  textMuted: string
-  toggleActive: string
-  toggleActiveBorder: string
-  toggleBg: string
-}
-
-function createTheme(appTheme: 'dark' | 'light'): Theme {
-  if (appTheme === 'dark') {
-    return {
-      accent: '#3b82f6',
-      badge: 'rgba(15, 23, 42, 0.08)',
-      badgeText: '#1e293b',
-      bg: 'rgba(255, 255, 255, 0.95)',
-      border: 'rgba(15, 23, 42, 0.10)',
-      divider: 'rgba(15, 23, 42, 0.06)',
-      icon: '#64748b',
-      sectionIcon: '#94a3b8',
-      shadow:
-        '0 24px 56px rgba(15,23,42,0.18), 0 8px 16px rgba(15,23,42,0.08), inset 0 1px 0 rgba(255,255,255,0.8)',
-      shadowCompact:
-        '0 10px 36px rgba(15,23,42,0.14), 0 2px 10px rgba(15,23,42,0.06)',
-      surface: 'rgba(15, 23, 42, 0.035)',
-      surfaceStrong: 'rgba(15, 23, 42, 0.06)',
-      surfaceTint: 'rgba(59, 130, 246, 0.08)',
-      scrollThumb: 'rgba(100, 116, 139, 0.5)',
-      scrollThumbHover: 'rgba(59, 130, 246, 0.42)',
-      scrollTrack: 'rgba(15, 23, 42, 0.06)',
-      text: '#0f172a',
-      textDim: '#cbd5e1',
-      textMuted: '#64748b',
-      toggleActive: 'rgba(59, 130, 246, 0.12)',
-      toggleActiveBorder: 'rgba(59, 130, 246, 0.3)',
-      toggleBg: 'rgba(15, 23, 42, 0.04)',
-    }
-  }
-
-  return {
-    accent: '#60a5fa',
-    badge: 'rgba(255, 255, 255, 0.10)',
-    badgeText: '#e2e8f0',
-    bg: 'rgba(2, 6, 23, 0.94)',
-    border: 'rgba(255, 255, 255, 0.10)',
-    divider: 'rgba(255, 255, 255, 0.06)',
-    icon: '#94a3b8',
-    sectionIcon: '#475569',
-    shadow:
-      '0 24px 56px rgba(0,0,0,0.55), 0 10px 24px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05)',
-    shadowCompact: '0 10px 36px rgba(0,0,0,0.4), 0 2px 10px rgba(0,0,0,0.2)',
-    surface: 'rgba(255, 255, 255, 0.045)',
-    surfaceStrong: 'rgba(255, 255, 255, 0.07)',
-    surfaceTint: 'rgba(96, 165, 250, 0.12)',
-    scrollThumb: 'rgba(148, 163, 184, 0.5)',
-    scrollThumbHover: 'rgba(96, 165, 250, 0.48)',
-    scrollTrack: 'rgba(255, 255, 255, 0.06)',
-    text: '#f1f5f9',
-    textDim: '#475569',
-    textMuted: '#94a3b8',
-    toggleActive: 'rgba(96, 165, 250, 0.15)',
-    toggleActiveBorder: 'rgba(96, 165, 250, 0.35)',
-    toggleBg: 'rgba(255, 255, 255, 0.06)',
-  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -260,9 +133,9 @@ function createTheme(appTheme: 'dark' | 'light'): Theme {
 type HealthStatus = 'good' | 'warn' | 'bad'
 
 const HEALTH_COLORS: Record<HealthStatus, string> = {
-  good: '#22c55e',
-  warn: '#f59e0b',
-  bad: '#ef4444',
+  bad: '#f87171',
+  good: '#4ade80',
+  warn: '#fbbf24',
 }
 
 function computeHealth(
@@ -298,16 +171,6 @@ function formatShortcutLabel(shortcut: string): string {
       p.length <= 1 ? p.toUpperCase() : p[0].toUpperCase() + p.slice(1)
     )
     .join(' + ')
-}
-
-function capitalizeLabel(value: string): string {
-  if (value.length === 0) return value
-  return value[0].toUpperCase() + value.slice(1)
-}
-
-function formatCoreValue(kind: 'breakpoint' | 'theme', value: string): string {
-  if (kind === 'breakpoint') return value.toUpperCase()
-  return capitalizeLabel(value)
 }
 
 function injectStyleOnce(id: string, css: string): void {
@@ -576,7 +439,6 @@ function DevPanelInner({
   children,
   features = [...ALL_DEV_PANEL_FEATURES],
   items = [],
-  layout = 'inspector',
   shortcut = 'shift+d',
   storageKey = 'react-shared-dev-panel',
 }: DevPanelProps) {
@@ -591,10 +453,8 @@ function DevPanelInner({
 
   const diagnostics = useDevPanelDiagnostics(features)
   const resolvedTheme = diagnostics.resolvedTheme
-  const t = createTheme(resolvedTheme)
   const featureKey = devPanelFeaturesKey(features)
   const featureSet = useMemo(() => new Set(features), [featureKey])
-
   const health = computeHealth(diagnostics, featureSet)
   const healthColor = HEALTH_COLORS[health]
 
@@ -683,32 +543,12 @@ function DevPanelInner({
     return () => document.documentElement.removeAttribute(attr)
   }, [featureSet, noAnimOn])
 
+  /* -- Thin scrollbar for scroll container -- */
   useEffect(() => {
     if (typeof document === 'undefined') return
     injectStyleOnce(
-      SCROLLBAR_STYLE_ID,
-      `
-        .react-shared-dev-panel-scroll {
-          scrollbar-width: thin;
-          scrollbar-color: var(--react-shared-dev-panel-scroll-thumb) var(--react-shared-dev-panel-scroll-track);
-        }
-        .react-shared-dev-panel-scroll::-webkit-scrollbar {
-          width: 10px;
-          height: 10px;
-        }
-        .react-shared-dev-panel-scroll::-webkit-scrollbar-track {
-          background: var(--react-shared-dev-panel-scroll-track);
-          border-radius: 999px;
-        }
-        .react-shared-dev-panel-scroll::-webkit-scrollbar-thumb {
-          background: var(--react-shared-dev-panel-scroll-thumb);
-          border: 2px solid var(--react-shared-dev-panel-scroll-track);
-          border-radius: 999px;
-        }
-        .react-shared-dev-panel-scroll::-webkit-scrollbar-thumb:hover {
-          background: var(--react-shared-dev-panel-scroll-thumb-hover);
-        }
-      `
+      'react-shared-dev-panel-scrollbar',
+      `.dp-scroll{scrollbar-width:thin;scrollbar-color:rgba(148,163,184,.2) transparent}.dp-scroll::-webkit-scrollbar{width:3px}.dp-scroll::-webkit-scrollbar-track{background:transparent}.dp-scroll::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:4px}`
     )
   }, [])
 
@@ -750,343 +590,17 @@ function DevPanelInner({
       .catch(() => {})
   }, [width, height, breakpoint, resolvedTheme, diagnostics])
 
-  /* -- Data -- */
   const sections = buildSections(diagnostics, featureSet, items)
-
   const hasTools =
     featureSet.has('outline') ||
     featureSet.has('grid') ||
     featureSet.has('slowMo') ||
     featureSet.has('focusRings') ||
     featureSet.has('noAnimations')
-  const hasDetails = sections.length > 0 || children != null || hasTools
-
   const shortcutHint = formatShortcutLabel(shortcut)
-  const trans = `${TRANSITION_MS}ms cubic-bezier(0.4, 0, 0.2, 1)`
+  const themeLabel =
+    resolvedTheme.charAt(0).toUpperCase() + resolvedTheme.slice(1)
 
-  /* -- Panel dimensions -- */
-  const isMobile = width < 640
-  const panelWidth = isMobile
-    ? 'min(calc(100vw - 0.75rem), 21.5rem)'
-    : layout === 'stack'
-      ? 'min(calc(100vw - 1.25rem), 28rem)'
-      : layout === 'hud'
-        ? 'min(calc(100vw - 1.25rem), 26rem)'
-        : 'min(calc(100vw - 1.25rem), 27.25rem)'
-
-  const scrollMaxH = isMobile
-    ? 'min(34vh, 15rem)'
-    : layout === 'hud'
-      ? 'min(28vh, 12rem)'
-      : 'min(42vh, 20rem)'
-
-  /* -- Health dot -- */
-  const dot = (
-    <span
-      aria-hidden
-      style={{
-        background: healthColor,
-        borderRadius: '50%',
-        boxShadow: `0 0 8px ${healthColor}55`,
-        display: 'inline-block',
-        flexShrink: 0,
-        height: '7px',
-        transition: `background ${trans}, box-shadow ${trans}`,
-        width: '7px',
-      }}
-    />
-  )
-
-  /* -- Core strip (always visible) -- */
-  const summaryValue = (value: ReactNode, color?: string) => (
-    <span
-      style={{
-        color: color ?? t.text,
-        fontFamily: MONO,
-        fontSize: isMobile ? '0.7rem' : '0.76rem',
-        fontVariantNumeric: 'tabular-nums',
-        fontWeight: 700,
-        letterSpacing: '-0.02em',
-        minWidth: 0,
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-      }}
-    >
-      {value}
-    </span>
-  )
-
-  const summaryLabel = (label: string) => (
-    <span
-      style={{
-        color: t.textMuted,
-        fontFamily: SANS,
-        fontSize: isMobile ? '0.7rem' : '0.735rem',
-        fontWeight: 700,
-        letterSpacing: '0.01em',
-        whiteSpace: 'nowrap',
-      }}
-    >
-      {label}
-    </span>
-  )
-
-  const desktopSummaryStrip = (
-    <div
-      style={{
-        alignItems: 'center',
-        display: 'flex',
-        gap: '0.4rem',
-        minWidth: 0,
-        width: '100%',
-      }}
-    >
-      <span
-        title={`Status: ${diagnostics.online ? 'Online' : 'Offline'}`}
-        style={{
-          alignItems: 'center',
-          display: 'inline-flex',
-          flexShrink: 0,
-          gap: '0.26rem',
-          minWidth: 0,
-          whiteSpace: 'nowrap',
-        }}
-      >
-        {summaryLabel('Status:')}
-        <span style={{ color: healthColor, display: 'flex' }}>{dot}</span>
-        {summaryValue(diagnostics.online ? 'Online' : 'Offline', healthColor)}
-      </span>
-      <span style={{ color: t.textDim, flexShrink: 0, opacity: 0.5 }}>|</span>
-      <span
-        title={`Viewport: ${width}\u00d7${height}`}
-        style={{ minWidth: 0, whiteSpace: 'nowrap' }}
-      >
-        {summaryValue(`${width}\u00d7${height}`)}
-      </span>
-      <span style={{ color: t.textDim, flexShrink: 0, opacity: 0.5 }}>|</span>
-      <span
-        title={`Breakpoint: ${formatCoreValue('breakpoint', breakpoint)}`}
-        style={{ minWidth: 0, whiteSpace: 'nowrap' }}
-      >
-        {summaryValue(formatCoreValue('breakpoint', breakpoint))}
-      </span>
-      <span style={{ color: t.textDim, flexShrink: 0, opacity: 0.5 }}>|</span>
-      <span
-        title={`Theme: ${formatCoreValue('theme', resolvedTheme)}`}
-        style={{ minWidth: 0, whiteSpace: 'nowrap' }}
-      >
-        {summaryValue(formatCoreValue('theme', resolvedTheme))}
-      </span>
-    </div>
-  )
-
-  const mobileSummaryStrip = (
-    <div
-      style={{
-        alignItems: 'center',
-        display: 'flex',
-        gap: '0.45rem',
-        minWidth: 0,
-        width: '100%',
-      }}
-    >
-      <span
-        title={`Status: ${diagnostics.online ? 'Online' : 'Offline'}`}
-        style={{
-          alignItems: 'center',
-          display: 'inline-flex',
-          flexShrink: 0,
-          gap: '0.28rem',
-          whiteSpace: 'nowrap',
-        }}
-      >
-        <span style={{ color: healthColor, display: 'flex' }}>{dot}</span>
-        {summaryValue(formatCoreValue('breakpoint', breakpoint), t.text)}
-      </span>
-      <span style={{ color: t.divider, flexShrink: 0 }}>|</span>
-      <span title={`Viewport: ${width}\u00d7${height}`} style={{ minWidth: 0 }}>
-        {summaryValue(`${width}\u00d7${height}`)}
-      </span>
-    </div>
-  )
-
-  const coreStrip = isMobile ? mobileSummaryStrip : desktopSummaryStrip
-
-  /* -- Icon button helper -- */
-  const icoBtn = (
-    label: string,
-    title: string,
-    onClick: () => void,
-    icon: ReactNode
-  ): ReactNode => (
-    <button
-      aria-label={label}
-      onClick={(e) => {
-        e.stopPropagation()
-        onClick()
-      }}
-      style={{
-        alignItems: 'center',
-        background: t.surface,
-        border: `1px solid ${t.border}`,
-        borderRadius: '10px',
-        color: t.textMuted,
-        cursor: 'pointer',
-        display: 'inline-flex',
-        flexShrink: 0,
-        justifyContent: 'center',
-        minHeight: isMobile ? '2rem' : '2.1rem',
-        minWidth: isMobile ? '2rem' : '2.1rem',
-        padding: '0.45rem',
-        transition: `color 0.15s, background 0.15s, border-color 0.15s`,
-      }}
-      title={title}
-      type='button'
-    >
-      {icon}
-    </button>
-  )
-
-  const headerActions = (
-    <div
-      style={{
-        alignItems: 'center',
-        display: 'flex',
-        flexShrink: 0,
-        gap: '0.25rem',
-        justifyContent: isMobile ? 'flex-end' : 'flex-start',
-      }}
-    >
-      {open
-        ? icoBtn(
-            copied ? 'Copied' : 'Copy diagnostics',
-            copied ? 'Copied!' : 'Copy diagnostics as JSON',
-            copyDiagnostics,
-            <Ico d={copied ? ICO_CHECK : ICO_COPY} size={13} />
-          )
-        : null}
-      {icoBtn(
-        open ? 'Collapse dev panel' : 'Expand dev panel',
-        open ? 'Collapse' : 'Expand',
-        () => setOpen((v) => !v),
-        <span
-          style={{
-            display: 'flex',
-            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
-            transition: `transform ${trans}`,
-          }}
-        >
-          <Ico d={ICO_CHEVRON} size={14} />
-        </span>
-      )}
-    </div>
-  )
-
-  /* -- KV row -- */
-  const renderRow = (row: KvRow, isLast: boolean) => (
-    <div
-      key={row.key}
-      title={row.title}
-      style={{
-        alignItems: 'baseline',
-        borderBottom: isLast ? 'none' : `1px solid ${t.divider}`,
-        display: 'grid',
-        gap: '0.75rem',
-        gridTemplateColumns: isMobile ? '7rem 1fr' : '8rem 1fr',
-        padding: '0.42rem 0',
-      }}
-    >
-      <span
-        style={{
-          color: t.textMuted,
-          fontFamily: SANS,
-          fontSize: '0.72rem',
-          fontWeight: 600,
-          letterSpacing: '0.01em',
-          whiteSpace: 'nowrap',
-        }}
-      >
-        {row.label}
-      </span>
-      <span
-        style={{
-          color: t.text,
-          fontFamily: MONO,
-          fontSize: '0.78rem',
-          fontVariantNumeric: 'tabular-nums',
-          fontWeight: 700,
-          overflowWrap: 'anywhere',
-          textAlign: 'right',
-          wordBreak: 'break-word',
-        }}
-      >
-        {row.value}
-      </span>
-    </div>
-  )
-
-  /* -- Section header with icon -- */
-  const renderSection = (
-    section: { rows: KvRow[]; title: string },
-    idx: number
-  ) => {
-    const iconPaths = SECTION_ICONS[section.title]
-    return (
-      <div
-        key={section.title}
-        style={{
-          borderTop: idx === 0 ? 'none' : `1px solid ${t.border}`,
-          marginTop: idx === 0 ? 0 : '0.5rem',
-          paddingTop: idx === 0 ? 0 : '0.5rem',
-        }}
-      >
-        <div
-          style={{
-            alignItems: 'center',
-            color: t.textDim,
-            display: 'flex',
-            fontFamily: SANS,
-            fontSize: '0.61rem',
-            fontWeight: 700,
-            gap: '0.35rem',
-            letterSpacing: '0.1em',
-            marginBottom: '0.35rem',
-            textTransform: 'uppercase',
-          }}
-        >
-          {iconPaths ? (
-            <span style={{ color: t.sectionIcon, display: 'flex' }}>
-              <Ico paths={iconPaths} size={11} />
-            </span>
-          ) : null}
-          {section.title}
-        </div>
-        {section.rows.map((row, rowIdx) =>
-          renderRow(row, rowIdx === section.rows.length - 1)
-        )}
-      </div>
-    )
-  }
-
-  /* -- Tool toggle button style -- */
-  const toolBtnStyle = (active: boolean): CSSProperties => ({
-    alignItems: 'center',
-    background: active ? t.toggleActive : t.surface,
-    border: `1px solid ${active ? t.toggleActiveBorder : t.border}`,
-    borderRadius: '10px',
-    color: active ? t.accent : t.textMuted,
-    cursor: 'pointer',
-    display: 'inline-flex',
-    fontFamily: SANS,
-    fontSize: '0.6875rem',
-    fontWeight: 600,
-    gap: '0.35rem',
-    padding: '0.38rem 0.62rem',
-    transition: `all 0.15s ease`,
-  })
-
-  /* -- Toolbar -- */
   type ToolDef = {
     feature: DevPanelFeature
     icon: ReactNode
@@ -1099,8 +613,8 @@ function DevPanelInner({
   const tools: ToolDef[] = [
     featureSet.has('outline')
       ? {
-          feature: 'outline',
-          icon: <Ico paths={ICO_OUTLINE} size={12} />,
+          feature: 'outline' as DevPanelFeature,
+          icon: <Ico paths={ICO_OUTLINE} size={11} />,
           label: 'Outline',
           on: outlineOn,
           title: 'Outline every element',
@@ -1109,8 +623,8 @@ function DevPanelInner({
       : null,
     featureSet.has('grid')
       ? {
-          feature: 'grid',
-          icon: <Ico paths={ICO_GRID} size={12} />,
+          feature: 'grid' as DevPanelFeature,
+          icon: <Ico paths={ICO_GRID} size={11} />,
           label: 'Grid',
           on: gridOn,
           title: '8px grid overlay',
@@ -1119,8 +633,8 @@ function DevPanelInner({
       : null,
     featureSet.has('slowMo')
       ? {
-          feature: 'slowMo',
-          icon: <Ico d={ICO_SLOW_MO} size={12} />,
+          feature: 'slowMo' as DevPanelFeature,
+          icon: <Ico d={ICO_SLOW_MO} size={11} />,
           label: 'Slow Mo',
           on: slowMoOn,
           title: 'Slow all CSS transitions to 2s',
@@ -1129,273 +643,232 @@ function DevPanelInner({
       : null,
     featureSet.has('focusRings')
       ? {
-          feature: 'focusRings',
-          icon: <Ico paths={ICO_FOCUS_RING} size={12} />,
+          feature: 'focusRings' as DevPanelFeature,
+          icon: <Ico paths={ICO_FOCUS_RING} size={11} />,
           label: 'Focus',
           on: focusRingsOn,
-          title: 'Show visible focus rings on all elements',
+          title: 'Show visible focus rings',
           toggle: () => setFocusRingsOn((v) => !v),
         }
       : null,
     featureSet.has('noAnimations')
       ? {
-          feature: 'noAnimations',
-          icon: <Ico paths={ICO_NO_ANIM} size={12} />,
+          feature: 'noAnimations' as DevPanelFeature,
+          icon: <Ico paths={ICO_NO_ANIM} size={11} />,
           label: 'No Anim',
           on: noAnimOn,
-          title: 'Disable all CSS animations and transitions',
+          title: 'Disable all CSS animations',
           toggle: () => setNoAnimOn((v) => !v),
         }
       : null,
   ].filter(Boolean) as ToolDef[]
 
-  const toolbar =
-    tools.length > 0 ? (
-      <div
-        style={{
-          borderTop: `1px solid ${t.border}`,
-          marginTop: '0.5rem',
-          paddingTop: '0.5rem',
-        }}
-      >
-        <span
-          style={{
-            alignItems: 'center',
-            color: t.textDim,
-            display: 'flex',
-            fontFamily: SANS,
-            fontSize: '0.625rem',
-            fontWeight: 700,
-            gap: '0.3rem',
-            letterSpacing: '0.1em',
-            marginBottom: '0.4rem',
-            textTransform: 'uppercase',
-          }}
-        >
-          <span style={{ color: t.sectionIcon, display: 'flex' }}>
-            <Ico
-              paths={[
-                'M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z',
-              ]}
-              size={10}
-            />
-          </span>
-          Tools
-        </span>
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '0.4rem',
-          }}
-        >
-          {tools.map((tool) => (
-            <button
-              key={tool.feature}
-              aria-pressed={tool.on}
-              onClick={tool.toggle}
-              style={toolBtnStyle(tool.on)}
-              title={tool.title}
-              type='button'
-            >
-              {tool.icon}
-              {tool.label}
-            </button>
-          ))}
-        </div>
-      </div>
-    ) : null
-
-  /* -- Slot -- */
-  const slotBlock = children ? (
-    <div
-      style={{
-        borderTop: sections.length > 0 ? `1px solid ${t.border}` : 'none',
-        marginTop: sections.length > 0 ? '0.5rem' : 0,
-        paddingTop: sections.length > 0 ? '0.5rem' : 0,
-      }}
-    >
-      <div
-        style={{
-          color: t.textDim,
-          fontFamily: SANS,
-          fontSize: '0.61rem',
-          fontWeight: 700,
-          letterSpacing: '0.1em',
-          marginBottom: '0.35rem',
-          textTransform: 'uppercase',
-        }}
-      >
-        Slot
-      </div>
-      <div
-        style={{
-          color: t.textMuted,
-          fontFamily: SANS,
-          fontSize: '0.8125rem',
-          fontWeight: 500,
-        }}
-      >
-        {children}
-      </div>
-    </div>
-  ) : null
-
-  /* ============================================================== */
-  /*  Render: single animated container                              */
-  /* ============================================================== */
-
   return (
     <div
       aria-label='Development panel'
+      className='fixed bottom-4 right-4 z-[9999] flex flex-col items-end gap-2'
       role='status'
-      style={{
-        backdropFilter: 'blur(20px) saturate(1.8)',
-        background: `linear-gradient(180deg, ${t.surfaceStrong}, transparent 34%), ${t.bg}`,
-        border: `1px solid ${t.border}`,
-        borderRadius: '16px',
-        bottom: isMobile ? '0.375rem' : '0.75rem',
-        boxShadow: open ? t.shadow : t.shadowCompact,
-        boxSizing: 'border-box',
-        cursor: open ? 'default' : 'pointer',
-        display: 'flex',
-        flexDirection: 'column',
-        fontFamily: SANS,
-        left: '50%',
-        lineHeight: 1.45,
-        outline: `1px solid ${t.surfaceStrong}`,
-        padding: open
-          ? isMobile
-            ? '0.5rem 0.5rem 0.45rem'
-            : '0.625rem 0.625rem 0.5rem'
-          : isMobile
-            ? '0.4rem 0.5rem'
-            : '0.45rem 0.55rem',
-        position: 'fixed',
-        transform: 'translateX(-50%)',
-        transition: `box-shadow ${trans}, padding ${trans}, opacity ${trans}`,
-        userSelect: 'none',
-        WebkitBackdropFilter: 'blur(20px) saturate(1.8)',
-        width: panelWidth,
-        zIndex: 9999,
-      }}
-      onClick={open ? undefined : () => setOpen(true)}
-      onKeyDown={
-        open
-          ? undefined
-          : (e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault()
-                setOpen(true)
-              }
-            }
-      }
-      tabIndex={open ? undefined : 0}
-      title={open ? undefined : `Dev panel (${shortcutHint})`}
     >
-      {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: isMobile ? 0 : '0.22rem',
-          minHeight: isMobile ? '2rem' : 'auto',
-        }}
-      >
-        {isMobile ? (
-          <div
-            style={{
-              alignItems: 'center',
-              display: 'grid',
-              gap: '0.45rem',
-              gridTemplateColumns: 'minmax(0, 1fr) auto',
-              minHeight: '2rem',
-            }}
-          >
-            {coreStrip}
-            {headerActions}
-          </div>
-        ) : (
-          <>
-            {coreStrip}
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                minHeight: '1.9rem',
-              }}
-            >
-              {headerActions}
+      {/* ─── Expanded card ─── */}
+      {open && (
+        <div className='w-72 overflow-hidden rounded-xl border border-white/[0.07] bg-zinc-900/95 shadow-2xl shadow-black/60 backdrop-blur-xl'>
+          {/* Header */}
+          <div className='flex items-center justify-between border-b border-white/[0.06] px-3 py-2'>
+            <div className='flex items-center gap-2'>
+              <span
+                aria-hidden
+                className='h-1.5 w-1.5 shrink-0 rounded-full'
+                style={{
+                  background: healthColor,
+                  boxShadow: `0 0 6px ${healthColor}88`,
+                }}
+              />
+              <span className='text-[10px] font-bold uppercase tracking-widest text-slate-500'>
+                Dev
+              </span>
             </div>
-          </>
-        )}
-      </div>
+            <div className='flex items-center gap-0.5'>
+              <button
+                className='rounded-md p-1.5 text-slate-500 transition-colors hover:bg-white/[0.06] hover:text-slate-200'
+                onClick={copyDiagnostics}
+                title={copied ? 'Copied!' : 'Copy diagnostics as JSON'}
+                type='button'
+              >
+                <Ico d={copied ? ICO_CHECK : ICO_COPY} size={12} />
+              </button>
+              <button
+                className='rounded-md p-1.5 text-slate-500 transition-colors hover:bg-white/[0.06] hover:text-slate-200'
+                onClick={() => setOpen(false)}
+                title='Collapse'
+                type='button'
+              >
+                <svg
+                  className='block'
+                  fill='none'
+                  height={12}
+                  stroke='currentColor'
+                  strokeLinecap='round'
+                  strokeWidth={2.5}
+                  viewBox='0 0 24 24'
+                  width={12}
+                >
+                  <path d='M18 6L6 18M6 6l12 12' />
+                </svg>
+              </button>
+            </div>
+          </div>
 
-      {/* Animated body wrapper */}
-      <div
-        style={{
-          maxHeight: open && hasDetails ? '600px' : '0',
-          opacity: open && hasDetails ? 1 : 0,
-          overflow: 'hidden',
-          transition: `max-height ${trans}, opacity ${trans}, margin-top ${trans}`,
-        }}
-      >
-        <div
-          style={{
-            borderTop: `1px solid ${t.border}`,
-            marginTop: '0.5rem',
-            paddingTop: '0.5rem',
-          }}
-        >
-          <div
-            className='react-shared-dev-panel-scroll'
-            style={
-              {
-                '--react-shared-dev-panel-scroll-thumb': t.scrollThumb,
-                '--react-shared-dev-panel-scroll-thumb-hover':
-                  t.scrollThumbHover,
-                '--react-shared-dev-panel-scroll-track': t.scrollTrack,
-                boxSizing: 'border-box',
-                maxHeight: scrollMaxH,
-                overflowX: 'hidden',
-                overflowY: 'auto',
-                paddingRight: isMobile ? '0.2rem' : '0.3rem',
-              } as CSSProperties
-            }
-          >
-            {sections.map((s, i) => renderSection(s, i))}
-            {slotBlock}
-            {toolbar}
+          {/* Core metrics (always shown) */}
+          <div className='space-y-0.5 border-b border-white/[0.06] px-3 py-2'>
+            <div className='flex items-baseline justify-between py-0.5'>
+              <span className='text-[11px] font-medium text-slate-500'>
+                viewport
+              </span>
+              <span className='font-mono text-[11px] font-bold tabular-nums text-slate-200'>
+                {width}
+                {'\u00d7'}
+                {height}
+              </span>
+            </div>
+            <div className='flex items-baseline justify-between py-0.5'>
+              <span className='text-[11px] font-medium text-slate-500'>
+                breakpoint
+              </span>
+              <span className='font-mono text-[11px] font-bold uppercase tabular-nums text-slate-200'>
+                {breakpoint.toUpperCase()}
+              </span>
+            </div>
+            <div
+              className='flex items-baseline justify-between py-0.5'
+              title={`Theme: ${themeLabel}`}
+            >
+              <span className='text-[11px] font-medium text-slate-500'>
+                theme
+              </span>
+              <span className='font-mono text-[11px] font-bold text-slate-200'>
+                {themeLabel}
+              </span>
+            </div>
+          </div>
+
+          {/* Diagnostic sections */}
+          {sections.length > 0 && (
+            <div className='dp-scroll max-h-64 space-y-3 overflow-y-auto px-3 py-2'>
+              {sections.map((section, idx) => (
+                <div key={section.title}>
+                  {idx > 0 && (
+                    <div className='-mx-3 mb-2.5 border-t border-white/[0.04]' />
+                  )}
+                  <div className='mb-1.5 text-[9px] font-bold uppercase tracking-widest text-slate-600'>
+                    {section.title}
+                  </div>
+                  <div className='space-y-0.5'>
+                    {section.rows.map((row) => (
+                      <div
+                        key={row.key}
+                        className='flex items-baseline justify-between py-0.5'
+                        title={row.title}
+                      >
+                        <span className='shrink-0 text-[11px] font-medium text-slate-500'>
+                          {row.label}
+                        </span>
+                        <span className='overflow-hidden text-ellipsis whitespace-nowrap font-mono text-[11px] font-bold tabular-nums text-slate-200'>
+                          {row.value}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Slot */}
+          {children && (
+            <div className='border-t border-white/[0.06] px-3 py-2'>
+              <div className='mb-1.5 text-[9px] font-bold uppercase tracking-widest text-slate-600'>
+                Slot
+              </div>
+              <div className='text-[11px] text-slate-400'>{children}</div>
+            </div>
+          )}
+
+          {/* Tools */}
+          {hasTools && tools.length > 0 && (
+            <div className='border-t border-white/[0.06] px-3 py-2'>
+              <div className='mb-1.5 text-[9px] font-bold uppercase tracking-widest text-slate-600'>
+                Tools
+              </div>
+              <div className='flex flex-wrap gap-1.5'>
+                {tools.map((tool) => (
+                  <button
+                    key={tool.feature}
+                    aria-pressed={tool.on}
+                    className={`flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] font-semibold transition-colors ${
+                      tool.on
+                        ? 'border-blue-500/30 bg-blue-500/20 text-blue-300'
+                        : 'border-white/[0.08] bg-white/5 text-slate-400 hover:bg-white/[0.08] hover:text-slate-200'
+                    }`}
+                    onClick={tool.toggle}
+                    title={tool.title}
+                    type='button'
+                  >
+                    {tool.icon}
+                    {tool.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Footer: shortcut hint */}
+          <div className='border-t border-white/[0.04] px-3 py-1.5'>
+            <span className='font-mono text-[9px] tracking-wider text-slate-700'>
+              {shortcutHint}
+            </span>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Footer (shortcut hint, animated) */}
-      <div
-        style={{
-          maxHeight: open ? '1.5rem' : '0',
-          opacity: open ? 0.65 : 0,
-          overflow: 'hidden',
-          transition: `max-height ${trans}, opacity ${trans}`,
-        }}
-      >
-        <div
-          style={{
-            background: t.surface,
-            border: `1px solid ${t.border}`,
-            borderRadius: '999px',
-            color: t.textMuted,
-            fontFamily: MONO,
-            fontSize: isMobile ? '0.66rem' : '0.72rem',
-            fontWeight: 700,
-            letterSpacing: '0.08em',
-            padding: '0.28rem 0.65rem 0.26rem',
-            textAlign: 'center',
-          }}
+      {/* ─── Collapsed pill ─── */}
+      {!open && (
+        <button
+          className='flex cursor-pointer select-none items-center gap-1.5 rounded-full border border-white/[0.08] bg-zinc-900/90 py-1.5 pl-2.5 pr-3 backdrop-blur-lg transition-colors hover:bg-zinc-800/90'
+          onClick={() => setOpen(true)}
+          title={`Dev panel (${shortcutHint})`}
+          type='button'
         >
-          Shortcut: {shortcutHint}
-        </div>
-      </div>
+          <span
+            aria-hidden
+            className='h-1.5 w-1.5 shrink-0 rounded-full'
+            style={{
+              background: healthColor,
+              boxShadow: `0 0 5px ${healthColor}88`,
+            }}
+          />
+          <span className='font-mono text-[11px] font-bold tabular-nums text-slate-200'>
+            {width}
+            {'\u00d7'}
+            {height}
+          </span>
+          <span className='text-[11px] text-slate-600'>·</span>
+          <span className='font-mono text-[11px] font-bold uppercase text-slate-300'>
+            {breakpoint.toUpperCase()}
+          </span>
+          <span className='text-[11px] text-slate-600'>·</span>
+          <span className='font-mono text-[11px] text-slate-300'>
+            {themeLabel}
+          </span>
+          {featureSet.has('perf') && diagnostics.fpsSampled && (
+            <>
+              <span className='text-[11px] text-slate-600'>·</span>
+              <span className='font-mono text-[11px] tabular-nums text-slate-300'>
+                {diagnostics.fps}fps
+              </span>
+            </>
+          )}
+        </button>
+      )}
     </div>
   )
 }
