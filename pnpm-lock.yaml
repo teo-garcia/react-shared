@@ -60,9 +60,6 @@ importers:
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
-      vite:
-        specifier: ^8.0.1
-        version: 8.0.1(@types/node@24.7.2)(yaml@2.8.3)
       vite-tsconfig-paths:
         specifier: ^6.0.0
         version: 6.1.1(typescript@5.9.3)(vite@8.0.1(@types/node@24.7.2)(yaml@2.8.3))
