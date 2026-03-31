@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, type ReactNode } from 'react'
 
+import { useEventListener } from '../../hooks/use-event-listener.js'
+
 const FOCUSABLE_SELECTORS = [
   'a[href]',
   'area[href]',
@@ -32,6 +34,9 @@ export function FocusTrap({
 }: FocusTrapProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const previousFocusRef = useRef<Element | null>(null)
+  const activeRef = useRef(active)
+
+  activeRef.current = active
 
   useEffect(() => {
     if (!active || !containerRef.current) return
@@ -45,34 +50,38 @@ export function FocusTrap({
     if (initialFocus) {
       getFocusable()[0]?.focus()
     }
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key !== 'Tab') return
-
-      const focusable = getFocusable()
-      const first = focusable[0]
-      const last = focusable.at(-1)
-      const current = document.activeElement as HTMLElement
-
-      if (event.shiftKey) {
-        if (current === first || !container.contains(current)) {
-          event.preventDefault()
-          last?.focus()
-        }
-      } else {
-        if (current === last || !container.contains(current)) {
-          event.preventDefault()
-          first?.focus()
-        }
-      }
-    }
-
-    document.addEventListener('keydown', handleKeyDown)
     return () => {
-      document.removeEventListener('keydown', handleKeyDown)
       ;(previousFocusRef.current as HTMLElement | null)?.focus()
     }
   }, [active, initialFocus])
+
+  useEventListener(document, 'keydown', (event) => {
+    if (!activeRef.current) return
+    if (event.key !== 'Tab') return
+
+    const container = containerRef.current
+    if (!container) return
+
+    const focusable = Array.from(
+      container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTORS)
+    )
+    const first = focusable[0]
+    const last = focusable.at(-1)
+    const current = document.activeElement as HTMLElement | null
+
+    if (event.shiftKey) {
+      if (current === first || !container.contains(current)) {
+        event.preventDefault()
+        last?.focus()
+      }
+      return
+    }
+
+    if (current === last || !container.contains(current)) {
+      event.preventDefault()
+      first?.focus()
+    }
+  })
 
   return <div ref={containerRef}>{children}</div>
 }

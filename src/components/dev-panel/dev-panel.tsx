@@ -12,6 +12,8 @@ import {
   DEFAULT_BREAKPOINTS,
   useBreakpoint,
 } from '../../hooks/use-breakpoint.js'
+import { useCopyToClipboard } from '../../hooks/use-copy-to-clipboard.js'
+import { useLocalStorage } from '../../hooks/use-local-storage.js'
 
 import {
   ALL_DEV_PANEL_FEATURES,
@@ -146,8 +148,10 @@ const DEV_PANEL_COLS_COUNTS: Record<
 
 /** Maximum CSS z-index (2^31 − 1). Panel must render above all page content. */
 const Z_PANEL = 2147483647
-/** One step below Z_PANEL so overlays are visible but stay beneath the panel shell. */
-const Z_OVERLAY = Z_PANEL - 1
+/** Columns sit below the baseline so spacing rhythm can be read on top when both are enabled. */
+const Z_COLS = Z_PANEL - 2
+/** Baseline sits above columns but still beneath the panel shell. */
+const Z_BASELINE = Z_PANEL - 1
 
 /* ------------------------------------------------------------------ */
 /*  Health                                                            */
@@ -556,14 +560,14 @@ function DevPanelInner({
   storageKey = 'react-shared-dev-panel',
 }: DevPanelProps) {
   const { breakpoint, height, width } = useBreakpoint(breakpoints)
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useLocalStorage<'open' | 'closed'>(storageKey, 'open')
   const [outlineOn, setOutlineOn] = useState(false)
   const [baselineOn, setBaselineOn] = useState(false)
   const [colsMode, setColsMode] = useState<DevPanelColsMode>('off')
   const [slowMoOn, setSlowMoOn] = useState(false)
   const [focusRingsOn, setFocusRingsOn] = useState(false)
   const [noAnimOn, setNoAnimOn] = useState(false)
-  const [copied, setCopied] = useState(false)
+  const [copied, copyToClipboard] = useCopyToClipboard(1400)
 
   const diagnostics = useDevPanelDiagnostics(features)
   const resolvedTheme = diagnostics.resolvedTheme
@@ -600,7 +604,7 @@ function DevPanelInner({
     }
     injectStyleOnce(
       BASELINE_STYLE_ID,
-      `html[${attr}]::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:${Z_OVERLAY}; background-size:8px 8px; background-image:linear-gradient(to right,rgba(148,163,184,0.14) 1px,transparent 1px),linear-gradient(to bottom,rgba(148,163,184,0.14) 1px,transparent 1px); }`
+      `html[${attr}]::after { content:""; position:fixed; inset:0; pointer-events:none; z-index:${Z_BASELINE}; background-size:8px 8px; background-image:linear-gradient(to right,rgba(148,163,184,0.14) 1px,transparent 1px),linear-gradient(to bottom,rgba(148,163,184,0.14) 1px,transparent 1px); }`
     )
     setAttr(attr, baselineOn)
     return () => document.documentElement.removeAttribute(attr)
@@ -622,7 +626,7 @@ function DevPanelInner({
     }
     injectStyleOnce(
       COLS_STYLE_ID,
-      `html[${attr}]::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:${Z_OVERLAY}; background-size:calc((100% + 8px) / var(--react-shared-dev-panel-cols)) 100%; background-repeat:repeat-x; background-image:linear-gradient(to right,rgba(56,189,248,0.12) 0 calc(100% - 8px),transparent calc(100% - 8px)); }`
+      `html[${attr}]::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:${Z_COLS}; background-size:calc((100% + 8px) / var(--react-shared-dev-panel-cols)) 100%; background-repeat:repeat-x; background-image:linear-gradient(to right,rgba(56,189,248,0.12) 0 calc(100% - 8px),transparent calc(100% - 8px)); }`
     )
     const root = document.documentElement
     const enabled = colsMode !== 'off'
@@ -704,22 +708,22 @@ function DevPanelInner({
     )
   }, [])
 
-  /* -- Persist open/closed -- */
+  /* -- Backward-compat storage migration for legacy raw open/closed values -- */
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const saved = window.localStorage.getItem(storageKey)
-    if (saved === 'open' || saved === 'closed') setOpen(saved === 'open')
-  }, [storageKey])
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    window.localStorage.setItem(storageKey, open ? 'open' : 'closed')
-  }, [open, storageKey])
+    const saved = window.localStorage.getItem(storageKey)
+    if (saved === 'open' || saved === 'closed') {
+      setOpen(saved)
+    }
+  }, [setOpen, storageKey])
 
   /* -- Keyboard shortcut -- */
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
-      if (matchShortcut(e, shortcut)) setOpen((v) => !v)
+      if (matchShortcut(e, shortcut)) {
+        setOpen((value) => (value === 'open' ? 'closed' : 'open'))
+      }
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
@@ -735,16 +739,11 @@ function DevPanelInner({
       theme: resolvedTheme,
       ...diagnostics,
     }
-    navigator.clipboard
-      .writeText(JSON.stringify(payload, null, 2))
-      .then(() => {
-        setCopied(true)
-        setTimeout(() => setCopied(false), 1400)
-      })
-      .catch(() => {})
+    void copyToClipboard(JSON.stringify(payload, null, 2))
   }, [
     baselineOn,
     colsMode,
+    copyToClipboard,
     width,
     height,
     breakpoint,
@@ -752,6 +751,7 @@ function DevPanelInner({
     diagnostics,
   ])
 
+  const isOpen = open === 'open'
   const sections = buildSections(diagnostics, featureSet, items, panelTheme)
   const hasTools =
     featureSet.has('outline') ||
@@ -854,28 +854,28 @@ function DevPanelInner({
 
   return (
     <div
-      aria-expanded={open}
+      aria-expanded={isOpen}
       aria-label='Development panel'
       className='fixed bottom-4 right-4 flex flex-col items-end'
       style={{ zIndex: Z_PANEL }}
-      onClick={open ? undefined : () => setOpen(true)}
+      onClick={isOpen ? undefined : () => setOpen('open')}
       onKeyDown={
-        open
+        isOpen
           ? undefined
           : (e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault()
-                setOpen(true)
+                setOpen('open')
               }
             }
       }
-      role={open ? 'region' : 'button'}
-      tabIndex={open ? undefined : 0}
-      title={open ? undefined : `Dev panel (${shortcutHint})`}
+      role={isOpen ? 'region' : 'button'}
+      tabIndex={isOpen ? undefined : 0}
+      title={isOpen ? undefined : `Dev panel (${shortcutHint})`}
     >
       <div
         className={`${shellBase} ${themeClasses.shell} ${
-          open
+          isOpen
             ? 'h-[min(27rem,calc(100vh-2rem))] w-[min(19rem,calc(100vw-2rem))] rounded-[1.1rem]'
             : 'h-10 w-[min(19rem,calc(100vw-2rem))] rounded-[0.95rem]'
         }`}
@@ -892,7 +892,7 @@ function DevPanelInner({
         <div className='relative flex h-full flex-col'>
           <div
             className={`flex items-center gap-2 px-3 ${
-              open ? `border-b ${themeClasses.divider}` : ''
+              isOpen ? `border-b ${themeClasses.divider}` : ''
             }`}
             style={{ height: '2.5rem' }}
           >
@@ -968,18 +968,18 @@ function DevPanelInner({
             </button>
 
             <button
-              aria-expanded={open}
+              aria-expanded={isOpen}
               className={`shrink-0 rounded-md p-1.5 ${themeClasses.mutedText} transition-colors ${themeClasses.buttonHover}`}
               onClick={(e) => {
                 e.stopPropagation()
-                setOpen((value) => !value)
+                setOpen((value) => (value === 'open' ? 'closed' : 'open'))
               }}
-              title={open ? 'Collapse' : `Dev panel (${shortcutHint})`}
+              title={isOpen ? 'Collapse' : `Dev panel (${shortcutHint})`}
               type='button'
             >
               <svg
                 className={`block transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                  open ? 'rotate-180' : ''
+                  isOpen ? 'rotate-180' : ''
                 }`}
                 fill='none'
                 height={14}
@@ -996,9 +996,9 @@ function DevPanelInner({
           </div>
 
           <div
-            aria-hidden={!open}
+            aria-hidden={!isOpen}
             className={`min-h-0 flex flex-1 flex-col overflow-hidden transition-[opacity,transform] duration-220 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-              open
+              isOpen
                 ? 'translate-y-0 opacity-100'
                 : 'pointer-events-none translate-y-1.5 opacity-0'
             }`}
