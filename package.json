@@ -16,6 +16,11 @@
       "default": "./dist/components/index.js",
       "types": "./dist/components/index.d.ts"
     },
+    "./components/async-boundary": {
+      "import": "./dist/components/async-boundary/index.js",
+      "default": "./dist/components/async-boundary/index.js",
+      "types": "./dist/components/async-boundary/index.d.ts"
+    },
     "./components/error-boundary": {
       "import": "./dist/components/error-boundary/index.js",
       "default": "./dist/components/error-boundary/index.js",
@@ -121,6 +126,16 @@
       "default": "./dist/hooks/use-breakpoint.js",
       "types": "./dist/hooks/use-breakpoint.d.ts"
     },
+    "./hooks/use-color-scheme": {
+      "import": "./dist/hooks/use-color-scheme.js",
+      "default": "./dist/hooks/use-color-scheme.js",
+      "types": "./dist/hooks/use-color-scheme.d.ts"
+    },
+    "./hooks/use-controllable": {
+      "import": "./dist/hooks/use-controllable.js",
+      "default": "./dist/hooks/use-controllable.js",
+      "types": "./dist/hooks/use-controllable.d.ts"
+    },
     "./hooks/use-event-listener": {
       "import": "./dist/hooks/use-event-listener.js",
       "default": "./dist/hooks/use-event-listener.js",
@@ -141,6 +156,11 @@
       "default": "./dist/hooks/use-latest.js",
       "types": "./dist/hooks/use-latest.d.ts"
     },
+    "./hooks/use-merged-ref": {
+      "import": "./dist/hooks/use-merged-ref.js",
+      "default": "./dist/hooks/use-merged-ref.js",
+      "types": "./dist/hooks/use-merged-ref.d.ts"
+    },
     "./hooks/use-network-status": {
       "import": "./dist/hooks/use-network-status.js",
       "default": "./dist/hooks/use-network-status.js",
@@ -150,6 +170,11 @@
       "import": "./dist/hooks/use-render-count.js",
       "default": "./dist/hooks/use-render-count.js",
       "types": "./dist/hooks/use-render-count.d.ts"
+    },
+    "./hooks/use-reduced-motion": {
+      "import": "./dist/hooks/use-reduced-motion.js",
+      "default": "./dist/hooks/use-reduced-motion.js",
+      "types": "./dist/hooks/use-reduced-motion.d.ts"
     },
     "./hooks/use-toggle": {
       "import": "./dist/hooks/use-toggle.js",
@@ -191,6 +216,11 @@
       "default": "./dist/hooks/use-scroll-lock.js",
       "types": "./dist/hooks/use-scroll-lock.d.ts"
     },
+    "./hooks/use-session-storage": {
+      "import": "./dist/hooks/use-session-storage.js",
+      "default": "./dist/hooks/use-session-storage.js",
+      "types": "./dist/hooks/use-session-storage.d.ts"
+    },
     "./hooks/use-throttle": {
       "import": "./dist/hooks/use-throttle.js",
       "default": "./dist/hooks/use-throttle.js",
@@ -200,6 +230,11 @@
       "import": "./dist/hooks/use-timeout.js",
       "default": "./dist/hooks/use-timeout.js",
       "types": "./dist/hooks/use-timeout.d.ts"
+    },
+    "./hooks/use-window-size": {
+      "import": "./dist/hooks/use-window-size.js",
+      "default": "./dist/hooks/use-window-size.js",
+      "types": "./dist/hooks/use-window-size.d.ts"
     },
     "./hooks/use-why-did-you-render": {
       "import": "./dist/hooks/use-why-did-you-render.js",
@@ -236,6 +271,11 @@
       "default": "./dist/utils/clamp.js",
       "types": "./dist/utils/clamp.d.ts"
     },
+    "./utils/chunk": {
+      "import": "./dist/utils/chunk.js",
+      "default": "./dist/utils/chunk.js",
+      "types": "./dist/utils/chunk.d.ts"
+    },
     "./utils/create-safe-context": {
       "import": "./dist/utils/create-safe-context.js",
       "default": "./dist/utils/create-safe-context.js",
@@ -260,6 +300,26 @@
       "import": "./dist/utils/noop.js",
       "default": "./dist/utils/noop.js",
       "types": "./dist/utils/noop.d.ts"
+    },
+    "./utils/omit": {
+      "import": "./dist/utils/omit.js",
+      "default": "./dist/utils/omit.js",
+      "types": "./dist/utils/omit.d.ts"
+    },
+    "./utils/partition": {
+      "import": "./dist/utils/partition.js",
+      "default": "./dist/utils/partition.js",
+      "types": "./dist/utils/partition.d.ts"
+    },
+    "./utils/pick": {
+      "import": "./dist/utils/pick.js",
+      "default": "./dist/utils/pick.js",
+      "types": "./dist/utils/pick.d.ts"
+    },
+    "./utils/range": {
+      "import": "./dist/utils/range.js",
+      "default": "./dist/utils/range.js",
+      "types": "./dist/utils/range.d.ts"
     },
     "./utils/sleep": {
       "import": "./dist/utils/sleep.js",

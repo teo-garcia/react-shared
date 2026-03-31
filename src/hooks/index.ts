@@ -3,6 +3,11 @@ export {
   resolveBreakpoint,
   useBreakpoint,
 } from './use-breakpoint.js'
+export { useColorScheme, type ColorScheme } from './use-color-scheme.js'
+export {
+  useControllable,
+  type UseControllableOptions,
+} from './use-controllable.js'
 export { useCopyToClipboard } from './use-copy-to-clipboard.js'
 export { useCounter, type UseCounterActions } from './use-counter.js'
 export { useDebounce } from './use-debounce.js'
@@ -16,14 +21,18 @@ export { useIsomorphicLayoutEffect } from './use-isomorphic-layout-effect.js'
 export { useKeyPress, type UseKeyPressOptions } from './use-key-press.js'
 export { useLatest } from './use-latest.js'
 export { useLocalStorage } from './use-local-storage.js'
+export { useMergedRef } from './use-merged-ref.js'
 export { useMeasure, type ElementRect } from './use-measure.js'
 export { useMediaQuery } from './use-media-query.js'
 export { useNetworkStatus } from './use-network-status.js'
 export { useOnClickOutside } from './use-on-click-outside.js'
 export { usePrevious } from './use-previous.js'
+export { useReducedMotion } from './use-reduced-motion.js'
 export { useRenderCount } from './use-render-count.js'
 export { useScrollLock } from './use-scroll-lock.js'
+export { useSessionStorage } from './use-session-storage.js'
 export { useThrottle } from './use-throttle.js'
 export { useTimeout } from './use-timeout.js'
 export { useToggle } from './use-toggle.js'
+export { useWindowSize, type WindowSize } from './use-window-size.js'
 export { useWhyDidYouRender } from './use-why-did-you-render.js'

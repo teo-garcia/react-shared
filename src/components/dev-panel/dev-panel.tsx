@@ -116,6 +116,16 @@ export interface DevPanelItem {
   value: ReactNode
 }
 
+export type DevPanelLayoutMode =
+  | 'off'
+  | '8px'
+  | '3'
+  | '6'
+  | '9'
+  | '12'
+  | '24'
+  | 'many'
+
 export interface DevPanelProps {
   breakpoints?: Record<string, number>
   children?: ReactNode
@@ -124,6 +134,29 @@ export interface DevPanelProps {
   items?: DevPanelItem[]
   shortcut?: string
   storageKey?: string
+}
+
+const DEV_PANEL_LAYOUT_MODES: readonly DevPanelLayoutMode[] = [
+  'off',
+  '8px',
+  '3',
+  '6',
+  '9',
+  '12',
+  '24',
+  'many',
+]
+
+const DEV_PANEL_COLUMN_COUNTS: Record<
+  Exclude<DevPanelLayoutMode, 'off' | '8px'>,
+  number
+> = {
+  '3': 3,
+  '6': 6,
+  '9': 9,
+  '12': 12,
+  '24': 24,
+  many: 48,
 }
 
 /* ------------------------------------------------------------------ */
@@ -267,6 +300,30 @@ function formatMetricLabel(label: string): string {
   if (explicit[label]) return explicit[label]
 
   return label.replace(/\b\w/g, (char) => char.toUpperCase())
+}
+
+function getNextLayoutMode(mode: DevPanelLayoutMode): DevPanelLayoutMode {
+  const currentIndex = DEV_PANEL_LAYOUT_MODES.indexOf(mode)
+  const nextIndex = (currentIndex + 1) % DEV_PANEL_LAYOUT_MODES.length
+  return DEV_PANEL_LAYOUT_MODES[nextIndex]
+}
+
+function getLayoutModeLabel(mode: DevPanelLayoutMode): string {
+  if (mode === 'off') return 'off'
+  if (mode === '8px') return '8px'
+  return mode === 'many' ? '48 cols' : `${mode} cols`
+}
+
+function getLayoutModeTitle(mode: DevPanelLayoutMode): string {
+  const nextMode = getNextLayoutMode(mode)
+  const nextLabel = getLayoutModeLabel(nextMode)
+  if (mode === 'off')
+    return `Layout overlay disabled; click to enable ${nextLabel}`
+  if (mode === '8px')
+    return `8px baseline grid overlay; click to cycle to ${nextLabel}`
+  if (mode === 'many')
+    return `48-column dense overlay; click to cycle to ${nextLabel}`
+  return `${mode}-column overlay; click to cycle to ${nextLabel}`
 }
 
 /* ------------------------------------------------------------------ */
@@ -526,7 +583,7 @@ function DevPanelInner({
   const { breakpoint, height, width } = useBreakpoint(breakpoints)
   const [open, setOpen] = useState(true)
   const [outlineOn, setOutlineOn] = useState(false)
-  const [gridOn, setGridOn] = useState(false)
+  const [layoutMode, setLayoutMode] = useState<DevPanelLayoutMode>('off')
   const [slowMoOn, setSlowMoOn] = useState(false)
   const [focusRingsOn, setFocusRingsOn] = useState(false)
   const [noAnimOn, setNoAnimOn] = useState(false)
@@ -560,18 +617,50 @@ function DevPanelInner({
   useEffect(() => {
     if (typeof document === 'undefined') return
     const attr = 'data-react-shared-dev-panel-grid'
+    const modeAttr = 'data-react-shared-dev-panel-layout-mode'
+    const kindAttr = 'data-react-shared-dev-panel-layout-kind'
     if (!featureSet.has('grid')) {
       document.documentElement.removeAttribute(attr)
+      document.documentElement.removeAttribute(modeAttr)
+      document.documentElement.removeAttribute(kindAttr)
+      document.documentElement.style.removeProperty(
+        '--react-shared-dev-panel-layout-columns'
+      )
       document.getElementById(GRID_STYLE_ID)?.remove()
       return
     }
     injectStyleOnce(
       GRID_STYLE_ID,
-      `html[${attr}]::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:2147483645; background-size:8px 8px; background-image: linear-gradient(to right,rgba(148,163,184,0.14) 1px,transparent 1px), linear-gradient(to bottom,rgba(148,163,184,0.14) 1px,transparent 1px); }`
+      `html[${attr}]::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:2147483645; }
+html[${attr}][${kindAttr}="baseline"]::before { background-size:8px 8px; background-image: linear-gradient(to right,rgba(148,163,184,0.14) 1px,transparent 1px), linear-gradient(to bottom,rgba(148,163,184,0.14) 1px,transparent 1px); }
+html[${attr}][${kindAttr}="columns"]::before { background-size:calc(100% / var(--react-shared-dev-panel-layout-columns)) 100%; background-repeat:repeat; background-image:linear-gradient(to right,rgba(56,189,248,0.08) 0 calc(100% - 1px),rgba(245,158,11,0.42) calc(100% - 1px) 100%); }`
     )
-    setAttr(attr, gridOn)
-    return () => document.documentElement.removeAttribute(attr)
-  }, [featureSet, gridOn])
+    const root = document.documentElement
+    const enabled = layoutMode !== 'off'
+    setAttr(attr, enabled)
+    if (!enabled) {
+      root.removeAttribute(modeAttr)
+      root.removeAttribute(kindAttr)
+      root.style.removeProperty('--react-shared-dev-panel-layout-columns')
+    } else if (layoutMode === '8px') {
+      root.setAttribute(modeAttr, layoutMode)
+      root.setAttribute(kindAttr, 'baseline')
+      root.style.removeProperty('--react-shared-dev-panel-layout-columns')
+    } else {
+      root.setAttribute(modeAttr, layoutMode)
+      root.setAttribute(kindAttr, 'columns')
+      root.style.setProperty(
+        '--react-shared-dev-panel-layout-columns',
+        String(DEV_PANEL_COLUMN_COUNTS[layoutMode])
+      )
+    }
+    return () => {
+      root.removeAttribute(attr)
+      root.removeAttribute(modeAttr)
+      root.removeAttribute(kindAttr)
+      root.style.removeProperty('--react-shared-dev-panel-layout-columns')
+    }
+  }, [featureSet, layoutMode])
 
   /* -- Overlay: Slow Mo -- */
   useEffect(() => {
@@ -657,6 +746,7 @@ function DevPanelInner({
   /* -- Copy diagnostics -- */
   const copyDiagnostics = useCallback(() => {
     const payload = {
+      layoutOverlayMode: layoutMode,
       viewport: `${width}\u00d7${height}`,
       breakpoint,
       theme: resolvedTheme,
@@ -669,7 +759,7 @@ function DevPanelInner({
         setTimeout(() => setCopied(false), 1400)
       })
       .catch(() => {})
-  }, [width, height, breakpoint, resolvedTheme, diagnostics])
+  }, [layoutMode, width, height, breakpoint, resolvedTheme, diagnostics])
 
   const sections = buildSections(diagnostics, featureSet, items, panelTheme)
   const hasTools =
@@ -709,10 +799,10 @@ function DevPanelInner({
       ? {
           feature: 'grid' as DevPanelFeature,
           icon: <Ico paths={ICO_GRID} />,
-          label: 'Grid',
-          on: gridOn,
-          title: '8px grid overlay',
-          toggle: () => setGridOn((v) => !v),
+          label: `Layout ${getLayoutModeLabel(layoutMode)}`,
+          on: layoutMode !== 'off',
+          title: getLayoutModeTitle(layoutMode),
+          toggle: () => setLayoutMode((value) => getNextLayoutMode(value)),
         }
       : null,
     featureSet.has('slowMo')

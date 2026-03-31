@@ -31,6 +31,7 @@ inline styles are used throughout.
 | Component        | Description                                                 |
 | ---------------- | ----------------------------------------------------------- |
 | `AspectRatio`    | Maintains a fixed width-to-height ratio for content         |
+| `AsyncBoundary`  | Composes `ErrorBoundary` and `Suspense` in one wrapper      |
 | `ClientOnly`     | Renders children only after hydration                       |
 | `DebugJSON`      | Dev-only collapsible JSON viewer                            |
 | `DevPanel`       | Dev-only overlay with viewport, breakpoint, and diagnostics |
@@ -50,6 +51,8 @@ inline styles are used throughout.
 | Hook                        | Description                                       |
 | --------------------------- | ------------------------------------------------- |
 | `useBreakpoint`             | Viewport dimensions and Tailwind-style breakpoint |
+| `useColorScheme`            | Reactive system dark/light preference             |
+| `useControllable`           | Controlled/uncontrolled state primitive           |
 | `useCopyToClipboard`        | Clipboard write with auto-reset copied state      |
 | `useCounter`                | Numeric state with increment, decrement, bounds   |
 | `useDebounce`               | Debounce a value by delay                         |
@@ -63,16 +66,20 @@ inline styles are used throughout.
 | `useKeyPress`               | Key press detection with modifier support         |
 | `useLatest`                 | Ref always pointing to the latest value           |
 | `useLocalStorage`           | Typed localStorage with JSON serialization        |
+| `useMergedRef`              | Merges multiple refs into one callback ref        |
 | `useMeasure`                | Element bounding rect via ResizeObserver          |
 | `useMediaQuery`             | Reactive CSS media query matching                 |
 | `useNetworkStatus`          | Online/offline detection                          |
 | `useOnClickOutside`         | Click outside detection for a ref                 |
 | `usePrevious`               | Previous value of a changing variable             |
+| `useReducedMotion`          | Reactive prefers-reduced-motion flag              |
 | `useRenderCount`            | Dev-only render counter with console logging      |
 | `useScrollLock`             | Lock/unlock body scrolling                        |
+| `useSessionStorage`         | Typed sessionStorage with JSON serialization      |
 | `useThrottle`               | Throttle a value by delay                         |
 | `useTimeout`                | Declarative setTimeout with clear and reset       |
 | `useToggle`                 | Boolean state with toggle, setOn, setOff          |
+| `useWindowSize`             | Raw `window.innerWidth/innerHeight` dimensions    |
 | `useWhyDidYouRender`        | Dev-only prop change logger                       |
 
 ---
@@ -81,6 +88,7 @@ inline styles are used throughout.
 
 | Utility             | Description                                          |
 | ------------------- | ---------------------------------------------------- |
+| `chunk`             | Split an array into fixed-size groups                |
 | `capitalize`        | Uppercase the first character of a string            |
 | `clamp`             | Clamp a number between min and max                   |
 | `cn`                | Merge class names via clsx + tailwind-merge          |
@@ -92,6 +100,10 @@ inline styles are used throughout.
 | `isClient`          | Boolean: true in browser environments                |
 | `isServer`          | Boolean: true in server environments                 |
 | `noop`              | No-op function for default callbacks                 |
+| `omit`              | Create a shallow object copy without selected keys   |
+| `partition`         | Split array values into matches and non-matches      |
+| `pick`              | Create a shallow object copy with selected keys      |
+| `range`             | Build ascending or descending numeric ranges         |
 | `sleep`             | Promise that resolves after a delay                  |
 | `truncate`          | Truncate a string with configurable suffix           |
 | `uniqueBy`          | Deduplicate an array by a key function               |
@@ -124,6 +136,7 @@ configurable diagnostics. Features beyond what Chrome DevTools provides:
 - Active element peek
 - Network connection quality
 - Element outline and 8px grid overlays
+- Column overlay cycle (`3`, `6`, `9`, `12`, `24`, `48`)
 - Custom app-specific items via the `items` prop
 - Copy diagnostics as JSON
 - Health status indicator (green, yellow, red)

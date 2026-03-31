@@ -92,7 +92,11 @@ describe('DevPanel', () => {
   })
 
   it('enables all diagnostic sections by default', () => {
-    render(<DevPanel />)
+    render(
+      <DevPanel
+        features={['colorScheme', 'dpr', 'media', 'online', 'scroll']}
+      />
+    )
 
     expect(screen.getByTitle('devicePixelRatio')).toBeInTheDocument()
     expect(screen.getByTitle('prefers-reduced-motion')).toBeInTheDocument()
@@ -116,8 +120,48 @@ describe('DevPanel', () => {
     expect(screen.getByText('feature-x')).toBeInTheDocument()
   })
 
+  it('cycles the layout overlay modes', () => {
+    render(<DevPanel features={['grid']} />)
+
+    const layoutButton = screen.getByRole('button', { name: /Layout off/i })
+
+    fireEvent.click(layoutButton)
+    expect(
+      document.documentElement.getAttribute('data-react-shared-dev-panel-grid')
+    ).toBe('')
+    expect(
+      document.documentElement.getAttribute(
+        'data-react-shared-dev-panel-layout-mode'
+      )
+    ).toBe('8px')
+
+    fireEvent.click(screen.getByRole('button', { name: /Layout 8px/i }))
+    expect(
+      document.documentElement.getAttribute(
+        'data-react-shared-dev-panel-layout-mode'
+      )
+    ).toBe('3')
+
+    fireEvent.click(screen.getByRole('button', { name: /Layout 3/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Layout 6/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Layout 9/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Layout 12/i }))
+    fireEvent.click(screen.getByRole('button', { name: /Layout 24/i }))
+
+    expect(
+      document.documentElement.style.getPropertyValue(
+        '--react-shared-dev-panel-layout-columns'
+      )
+    ).toBe('48')
+
+    fireEvent.click(screen.getByRole('button', { name: /Layout 48/i }))
+    expect(
+      document.documentElement.hasAttribute('data-react-shared-dev-panel-grid')
+    ).toBe(false)
+  })
+
   it('collapses into a button when the close button is clicked', () => {
-    render(<DevPanel />)
+    render(<DevPanel features={[]} />)
 
     fireEvent.click(screen.getByTitle('Collapse'))
 
@@ -127,7 +171,7 @@ describe('DevPanel', () => {
   })
 
   it('reopens when the collapsed panel is clicked', () => {
-    render(<DevPanel />)
+    render(<DevPanel features={[]} />)
 
     fireEvent.click(screen.getByTitle('Collapse'))
     fireEvent.click(screen.getByRole('button', { name: 'Development panel' }))
@@ -140,7 +184,7 @@ describe('DevPanel', () => {
   it('persists the collapsed state', () => {
     localStorage.setItem('react-shared-dev-panel', 'closed')
 
-    render(<DevPanel />)
+    render(<DevPanel features={[]} />)
 
     expect(
       screen.getByRole('button', { name: 'Development panel' })
@@ -150,7 +194,7 @@ describe('DevPanel', () => {
   it('resolves an explicit light class before the system preference', () => {
     document.documentElement.className = 'light'
 
-    render(<DevPanel />)
+    render(<DevPanel features={[]} />)
 
     expect(
       screen.getByTitle('Panel theme: Dark (page: Light)')
@@ -160,7 +204,7 @@ describe('DevPanel', () => {
   it('renders nothing in production', () => {
     vi.stubEnv('NODE_ENV', 'production')
 
-    render(<DevPanel />)
+    render(<DevPanel features={[]} />)
 
     expect(
       screen.queryByRole('region', { name: 'Development panel' })
