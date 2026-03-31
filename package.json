@@ -1,6 +1,6 @@
 {
   "name": "@teo-garcia/react-shared",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Shared React hooks, utilities, and test helpers for the teo-garcia template portfolio",
   "type": "module",
   "main": "./dist/index.js",
