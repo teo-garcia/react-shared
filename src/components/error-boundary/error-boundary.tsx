@@ -2,6 +2,7 @@
 
 import { Component, type ReactNode } from 'react'
 
+import { cn } from '../../utils/cn.js'
 import type { ErrorBoundaryProps, FallbackProps } from '../../types.js'
 
 interface ErrorBoundaryState {
@@ -58,54 +59,25 @@ export class ErrorBoundary extends Component<
       return (
         <div
           role='alert'
-          style={{
-            padding: '1rem',
-            border: '1px solid #f5c6cb',
-            borderRadius: '4px',
-            backgroundColor: '#f8d7da',
-            color: '#721c24',
-            fontFamily: 'inherit',
-          }}
+          className={cn(
+            'rounded border border-rose-200 bg-rose-100 p-4 font-inherit text-rose-900'
+          )}
         >
-          <p style={{ margin: 0, fontWeight: 600 }}>Something went wrong</p>
-          <p style={{ margin: '0.5rem 0 0', fontSize: '0.875rem' }}>
-            {error.message}
-          </p>
+          <p className='m-0 font-semibold'>Something went wrong</p>
+          <p className='mt-2 text-sm'>{error.message}</p>
           {error.stack && (
-            <details style={{ marginTop: '0.5rem' }}>
-              <summary
-                style={{
-                  cursor: 'pointer',
-                  fontSize: '0.875rem',
-                  userSelect: 'none',
-                }}
-              >
+            <details className='mt-2'>
+              <summary className='cursor-pointer select-none text-sm'>
                 Stack trace
               </summary>
-              <pre
-                style={{
-                  marginTop: '0.5rem',
-                  whiteSpace: 'pre-wrap',
-                  fontSize: '0.75rem',
-                  overflowX: 'auto',
-                }}
-              >
+              <pre className='mt-2 overflow-x-auto whitespace-pre-wrap text-xs'>
                 {error.stack}
               </pre>
             </details>
           )}
           <button
             onClick={this.resetError}
-            style={{
-              marginTop: '0.75rem',
-              padding: '0.25rem 0.75rem',
-              cursor: 'pointer',
-              fontSize: '0.875rem',
-              border: '1px solid #721c24',
-              borderRadius: '4px',
-              background: 'transparent',
-              color: '#721c24',
-            }}
+            className='mt-3 cursor-pointer rounded border border-rose-900 bg-transparent px-3 py-1 text-sm text-rose-900'
           >
             Try again
           </button>

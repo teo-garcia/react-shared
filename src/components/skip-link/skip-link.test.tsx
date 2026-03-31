@@ -19,10 +19,10 @@ describe('SkipLink', () => {
     expect(screen.getByRole('link')).toHaveAttribute('href', '#main-content')
   })
 
-  it('is visually hidden by default (top < 0)', () => {
+  it('is visually hidden by default', () => {
     render(<SkipLink href='#main' />)
     const link = screen.getByRole('link')
-    expect(link).toHaveStyle({ top: '-100%' })
+    expect(link).toHaveClass('-top-full')
   })
 
   it('becomes visible on focus', () => {
@@ -30,8 +30,7 @@ describe('SkipLink', () => {
     const link = screen.getByRole('link')
 
     fireEvent.focus(link)
-    // happy-dom resolves rem -> px (0.5rem = 8px at the default 16px root size)
-    expect(link).toHaveStyle({ top: '8px' })
+    expect(link).toHaveClass('top-2')
   })
 
   it('hides again on blur', () => {
@@ -40,6 +39,6 @@ describe('SkipLink', () => {
 
     fireEvent.focus(link)
     fireEvent.blur(link)
-    expect(link).toHaveStyle({ top: '-100%' })
+    expect(link).toHaveClass('-top-full')
   })
 })

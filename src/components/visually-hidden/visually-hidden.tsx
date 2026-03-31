@@ -1,23 +1,20 @@
 import { type HTMLAttributes } from 'react'
 
-const style: React.CSSProperties = {
-  position: 'absolute',
-  width: '1px',
-  height: '1px',
-  padding: 0,
-  margin: '-1px',
-  overflow: 'hidden',
-  clip: 'rect(0, 0, 0, 0)',
-  whiteSpace: 'nowrap',
-  borderWidth: 0,
-}
+import { cn } from '../../utils/cn.js'
 
 export function VisuallyHidden({
   children,
+  className,
   ...props
 }: HTMLAttributes<HTMLSpanElement>) {
   return (
-    <span style={style} {...props}>
+    <span
+      className={cn(
+        'absolute m-[-1px] h-px w-px overflow-hidden whitespace-nowrap border-0 p-0 [clip:rect(0,0,0,0)]',
+        className
+      )}
+      {...props}
+    >
       {children}
     </span>
   )

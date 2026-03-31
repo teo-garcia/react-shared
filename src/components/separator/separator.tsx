@@ -1,5 +1,7 @@
 import { type HTMLAttributes } from 'react'
 
+import { cn } from '../../utils/cn.js'
+
 interface SeparatorProps extends HTMLAttributes<HTMLHRElement> {
   orientation?: 'horizontal' | 'vertical'
 }
@@ -10,31 +12,20 @@ interface SeparatorProps extends HTMLAttributes<HTMLHRElement> {
  */
 export function Separator({
   orientation = 'horizontal',
-  style,
+  className,
   ...props
 }: SeparatorProps) {
   return (
     <hr
       role='separator'
       aria-orientation={orientation}
-      style={{
-        border: 0,
-        flexShrink: 0,
-        ...(orientation === 'horizontal'
-          ? {
-              borderTop:
-                '1px solid var(--react-shared-separator-color, rgba(15, 23, 42, 0.12))',
-              margin: '0.5rem 0',
-              width: '100%',
-            }
-          : {
-              alignSelf: 'stretch',
-              borderLeft:
-                '1px solid var(--react-shared-separator-color, rgba(15, 23, 42, 0.12))',
-              margin: '0 0.5rem',
-            }),
-        ...style,
-      }}
+      className={cn(
+        'shrink-0 border-0 bg-[var(--react-shared-separator-color,rgba(15,23,42,0.12))]',
+        orientation === 'horizontal'
+          ? 'my-2 h-px w-full'
+          : 'mx-2 h-auto min-h-full w-px self-stretch',
+        className
+      )}
       {...props}
     />
   )

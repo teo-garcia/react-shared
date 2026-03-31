@@ -1,5 +1,7 @@
 import { type HTMLAttributes } from 'react'
 
+import { cn } from '../../utils/cn.js'
+
 interface AspectRatioProps extends HTMLAttributes<HTMLDivElement> {
   /**
    * Width-to-height ratio expressed as a number.
@@ -16,21 +18,24 @@ interface AspectRatioProps extends HTMLAttributes<HTMLDivElement> {
  */
 export function AspectRatio({
   ratio = 16 / 9,
-  style,
+  className,
   children,
   ...props
 }: AspectRatioProps) {
   return (
     <div
-      style={{
-        position: 'relative',
-        width: '100%',
-        paddingBottom: `${(1 / ratio) * 100}%`,
-        ...style,
-      }}
+      className={cn(
+        'relative w-full',
+        ratio === 1
+          ? 'aspect-square'
+          : ratio === 16 / 9
+            ? 'aspect-video'
+            : `aspect-[${ratio}]`,
+        className
+      )}
       {...props}
     >
-      <div style={{ position: 'absolute', inset: 0 }}>{children}</div>
+      <div className='absolute inset-0'>{children}</div>
     </div>
   )
 }

@@ -856,8 +856,7 @@ function DevPanelInner({
     <div
       aria-expanded={isOpen}
       aria-label='Development panel'
-      className='fixed bottom-4 right-4 flex flex-col items-end'
-      style={{ zIndex: Z_PANEL }}
+      className='fixed bottom-4 right-4 z-[2147483647] flex flex-col items-end'
       onClick={isOpen ? undefined : () => setOpen('open')}
       onKeyDown={
         isOpen
@@ -878,12 +877,8 @@ function DevPanelInner({
           isOpen
             ? 'h-[min(27rem,calc(100vh-2rem))] w-[min(19rem,calc(100vw-2rem))] rounded-[1.1rem]'
             : 'h-10 w-[min(19rem,calc(100vw-2rem))] rounded-[0.95rem]'
-        }`}
+        } font-sans`}
         role='presentation'
-        style={{
-          fontFamily:
-            'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif',
-        }}
       >
         <div
           aria-hidden
@@ -891,10 +886,9 @@ function DevPanelInner({
         />
         <div className='relative flex h-full flex-col'>
           <div
-            className={`flex items-center gap-2 px-3 ${
+            className={`h-10 flex items-center gap-2 px-3 ${
               isOpen ? `border-b ${themeClasses.divider}` : ''
             }`}
-            style={{ height: '2.5rem' }}
           >
             <span
               aria-hidden

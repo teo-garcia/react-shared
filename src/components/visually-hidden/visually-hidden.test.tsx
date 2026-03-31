@@ -9,14 +9,10 @@ describe('VisuallyHidden', () => {
     expect(screen.getByText('Screen reader text')).toBeInTheDocument()
   })
 
-  it('applies visually hidden styles', () => {
+  it('applies visually hidden classes', () => {
     render(<VisuallyHidden>Hidden</VisuallyHidden>)
     const el = screen.getByText('Hidden')
-    expect(el).toHaveStyle({
-      position: 'absolute',
-      width: '1px',
-      height: '1px',
-    })
+    expect(el).toHaveClass('absolute', 'h-px', 'w-px', 'overflow-hidden')
   })
 
   it('forwards additional HTML attributes', () => {

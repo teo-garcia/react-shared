@@ -1,5 +1,7 @@
 'use client'
 
+import { cn } from '../../utils/cn.js'
+
 interface DebugJSONProps {
   value: unknown
   label?: string
@@ -18,36 +20,14 @@ export function DebugJSON({ value, label, open = false }: DebugJSONProps) {
   return (
     <details
       open={open}
-      style={{
-        fontFamily: 'ui-monospace, monospace',
-        fontSize: '0.75rem',
-        border: '1px solid rgba(0,0,0,0.1)',
-        borderRadius: '6px',
-        padding: '0.5rem 0.625rem',
-        margin: '0.5rem 0',
-        background: 'rgba(0,0,0,0.03)',
-        maxWidth: '100%',
-        overflow: 'auto',
-      }}
+      className={cn(
+        'my-2 max-w-full overflow-auto rounded-md border border-black/10 bg-black/3 px-2.5 py-2 font-mono text-xs'
+      )}
     >
-      <summary
-        style={{
-          cursor: 'pointer',
-          userSelect: 'none',
-          color: '#64748b',
-          fontWeight: 500,
-        }}
-      >
+      <summary className='cursor-pointer select-none font-medium text-slate-500'>
         {label ?? 'debug'}
       </summary>
-      <pre
-        style={{
-          margin: '0.5rem 0 0',
-          whiteSpace: 'pre-wrap',
-          wordBreak: 'break-all',
-          color: '#1e293b',
-        }}
-      >
+      <pre className='mt-2 break-all whitespace-pre-wrap text-slate-800'>
         {JSON.stringify(value, null, 2)}
       </pre>
     </details>

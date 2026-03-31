@@ -2,6 +2,8 @@
 
 import { useState, type AnchorHTMLAttributes } from 'react'
 
+import { cn } from '../../utils/cn.js'
+
 interface SkipLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
   /** The `id` of the main content element to jump to, e.g. `"main-content"`. */
   href: string
@@ -15,6 +17,7 @@ interface SkipLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
 export function SkipLink({
   href,
   children = 'Skip to main content',
+  className,
   ...props
 }: SkipLinkProps) {
   const [focused, setFocused] = useState(false)
@@ -24,25 +27,14 @@ export function SkipLink({
       href={href}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
-      style={{
-        position: 'fixed',
-        top: focused ? '0.5rem' : '-100%',
-        left: '0.5rem',
-        zIndex: 9999,
-        padding: '0.5rem 1rem',
-        background:
-          'var(--react-shared-skip-link-background, rgba(15, 23, 42, 0.96))',
-        color: 'var(--react-shared-skip-link-foreground, #fff)',
-        textDecoration: 'none',
-        borderRadius: '9999px',
-        fontSize: '0.875rem',
-        fontWeight: 600,
-        transition: 'top 0.1s',
-        boxShadow: focused
-          ? '0 0 0 3px rgba(59, 130, 246, 0.35)'
-          : '0 1px 2px rgba(15, 23, 42, 0.16)',
-        outline: '2px solid transparent',
-      }}
+      className={cn(
+        'fixed left-2 z-[9999] rounded-full px-4 py-2 text-sm font-semibold no-underline outline-2 outline-transparent transition-[top,box-shadow] duration-100',
+        'bg-[var(--react-shared-skip-link-background,rgba(15,23,42,0.96))] text-[var(--react-shared-skip-link-foreground,#fff)]',
+        focused
+          ? 'top-2 shadow-[0_0_0_3px_rgba(59,130,246,0.35)]'
+          : '-top-full shadow-[0_1px_2px_rgba(15,23,42,0.16)]',
+        className
+      )}
       {...props}
     >
       {children}

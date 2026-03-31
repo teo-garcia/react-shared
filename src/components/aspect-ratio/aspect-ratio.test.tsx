@@ -13,20 +13,19 @@ describe('AspectRatio', () => {
     expect(screen.getByRole('img')).toBeInTheDocument()
   })
 
-  it('defaults to 16/9 ratio (paddingBottom ≈ 56.25%)', () => {
+  it('defaults to the video aspect ratio class', () => {
     render(<AspectRatio data-testid='ar' />)
     const outer = screen.getByTestId('ar')
-    expect(outer).toHaveStyle({ paddingBottom: '56.25%' })
+    expect(outer).toHaveClass('aspect-video')
   })
 
-  it('applies the correct paddingBottom for a custom ratio', () => {
-    // 1:1 square → paddingBottom = 100%
+  it('uses the square aspect ratio class for ratio=1', () => {
     render(<AspectRatio ratio={1} data-testid='ar' />)
-    expect(screen.getByTestId('ar')).toHaveStyle({ paddingBottom: '100%' })
+    expect(screen.getByTestId('ar')).toHaveClass('aspect-square')
   })
 
-  it('merges additional style props', () => {
-    render(<AspectRatio data-testid='ar' style={{ borderRadius: '8px' }} />)
-    expect(screen.getByTestId('ar')).toHaveStyle({ borderRadius: '8px' })
+  it('merges additional classes', () => {
+    render(<AspectRatio data-testid='ar' className='rounded-lg' />)
+    expect(screen.getByTestId('ar')).toHaveClass('rounded-lg')
   })
 })
