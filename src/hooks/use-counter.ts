@@ -36,10 +36,7 @@ export function useCounter(
     (delta = 1) => setCount((c) => clamp(c - delta)),
     [clamp]
   )
-  const set = useCallback(
-    (value: number) => setCount(clamp(value)),
-    [clamp]
-  )
+  const set = useCallback((value: number) => setCount(clamp(value)), [clamp])
   const reset = useCallback(
     () => setCount(clamp(initialValue)),
     [initialValue, clamp]

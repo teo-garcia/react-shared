@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { DevPanel } from './dev-panel.js'
@@ -70,6 +70,7 @@ describe('DevPanel', () => {
   ]
 
   afterEach(() => {
+    cleanup()
     vi.unstubAllGlobals()
     vi.unstubAllEnvs()
     overlayAttrs.forEach((a) => document.documentElement.removeAttribute(a))
@@ -79,9 +80,14 @@ describe('DevPanel', () => {
   it('renders core metrics only when features is an empty list', () => {
     render(<DevPanel features={[]} />)
 
-    expect(screen.getByText('MD')).toBeInTheDocument()
+    expect(
+      screen.getByRole('region', { name: 'Development panel' })
+    ).toBeInTheDocument()
     expect(screen.getByText('820\u00d7640')).toBeInTheDocument()
-    expect(screen.getByText('Light')).toBeInTheDocument()
+    expect(
+      screen.getByTitle('Panel theme: Dark (page: Light)')
+    ).toHaveTextContent('Dark')
+    expect(screen.getByTitle('navigator.onLine')).toHaveTextContent('Online')
     expect(screen.queryByTitle('devicePixelRatio')).not.toBeInTheDocument()
   })
 
@@ -91,12 +97,12 @@ describe('DevPanel', () => {
     expect(screen.getByTitle('devicePixelRatio')).toBeInTheDocument()
     expect(screen.getByTitle('prefers-reduced-motion')).toBeInTheDocument()
     expect(
-      screen.getByTitle('prefers-color-scheme vs resolved theme')
+      screen.getByTitle('system preference -> page theme -> panel theme')
     ).toBeInTheDocument()
     expect(
       screen.getByTitle('window.scrollY / documentElement.scrollHeight')
     ).toBeInTheDocument()
-    expect(screen.getByTitle('navigator.onLine')).toBeInTheDocument()
+    expect(screen.getAllByTitle('navigator.onLine')).toHaveLength(2)
   })
 
   it('renders custom items and children in the panel', () => {
@@ -110,21 +116,25 @@ describe('DevPanel', () => {
     expect(screen.getByText('feature-x')).toBeInTheDocument()
   })
 
-  it('animates to collapsed state when the close button is clicked', () => {
+  it('collapses into a button when the close button is clicked', () => {
     render(<DevPanel />)
 
     fireEvent.click(screen.getByTitle('Collapse'))
 
-    expect(screen.getByTitle(/dev panel/i)).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Development panel' })
+    ).toBeInTheDocument()
   })
 
   it('reopens when the collapsed panel is clicked', () => {
     render(<DevPanel />)
 
     fireEvent.click(screen.getByTitle('Collapse'))
-    fireEvent.click(screen.getByTitle(/dev panel/i))
+    fireEvent.click(screen.getByRole('button', { name: 'Development panel' }))
 
-    expect(screen.getByTitle('devicePixelRatio')).toBeInTheDocument()
+    expect(
+      screen.getByRole('region', { name: 'Development panel' })
+    ).toBeInTheDocument()
   })
 
   it('persists the collapsed state', () => {
@@ -132,7 +142,9 @@ describe('DevPanel', () => {
 
     render(<DevPanel />)
 
-    expect(screen.getByTitle(/dev panel/i)).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Development panel' })
+    ).toBeInTheDocument()
   })
 
   it('resolves an explicit light class before the system preference', () => {
@@ -140,7 +152,9 @@ describe('DevPanel', () => {
 
     render(<DevPanel />)
 
-    expect(screen.getByTitle('Theme: Light')).toHaveTextContent('Light')
+    expect(
+      screen.getByTitle('Panel theme: Dark (page: Light)')
+    ).toHaveTextContent('Dark')
   })
 
   it('renders nothing in production', () => {
@@ -148,6 +162,11 @@ describe('DevPanel', () => {
 
     render(<DevPanel />)
 
-    expect(screen.queryByText('MD')).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('region', { name: 'Development panel' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Development panel' })
+    ).not.toBeInTheDocument()
   })
 })

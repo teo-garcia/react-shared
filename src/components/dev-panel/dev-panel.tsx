@@ -79,7 +79,7 @@ const ICO_NO_ANIM = [
 function Ico({
   d,
   paths,
-  size = 14,
+  size = 12,
 }: {
   d?: string
   paths?: string[]
@@ -93,7 +93,7 @@ function Ico({
       viewBox='0 0 24 24'
       fill='none'
       stroke='currentColor'
-      strokeWidth={1.8}
+      strokeWidth={2}
       strokeLinecap='round'
       strokeLinejoin='round'
       className='block shrink-0'
@@ -130,22 +130,43 @@ export interface DevPanelProps {
 /*  Health                                                            */
 /* ------------------------------------------------------------------ */
 
-type HealthStatus = 'good' | 'warn' | 'bad'
+type PanelTheme = 'dark' | 'light'
 
-const HEALTH_COLORS: Record<HealthStatus, string> = {
-  bad: '#f87171',
-  good: '#4ade80',
-  warn: '#fbbf24',
-}
-
-function computeHealth(
-  d: DevPanelDiagnostics,
-  enabled: Set<DevPanelFeature>
-): HealthStatus {
-  if (enabled.has('online') && !d.online) return 'bad'
-  if (enabled.has('perf') && d.fpsSampled && d.fps < 24) return 'bad'
-  if (enabled.has('perf') && d.fpsSampled && d.fps < 48) return 'warn'
-  return 'good'
+const PANEL_THEME_CLASSES: Record<
+  PanelTheme,
+  {
+    buttonHover: string
+    divider: string
+    glow: string
+    mutedText: string
+    sectionBorder: string
+    shell: string
+    strongText: string
+    subText: string
+  }
+> = {
+  dark: {
+    buttonHover: 'hover:bg-white/[0.08] hover:text-white',
+    divider: 'border-white/[0.08]',
+    glow: 'bg-[radial-gradient(circle_at_top_right,rgba(245,158,11,0.2),transparent_38%),radial-gradient(circle_at_bottom_left,rgba(56,189,248,0.16),transparent_34%)]',
+    mutedText: 'text-slate-400',
+    sectionBorder: 'border-white/[0.05]',
+    shell:
+      'border-white/12 bg-[#08101b]/92 text-[#f7efe4] shadow-[0_28px_70px_-24px_rgba(2,6,23,0.78),inset_0_1px_0_rgba(255,255,255,0.08)]',
+    strongText: 'text-white',
+    subText: 'text-[#cbd5e1]',
+  },
+  light: {
+    buttonHover: 'hover:bg-black/[0.06] hover:text-slate-950',
+    divider: 'border-black/[0.08]',
+    glow: 'bg-[radial-gradient(circle_at_top_right,rgba(245,158,11,0.14),transparent_38%),radial-gradient(circle_at_bottom_left,rgba(14,165,233,0.12),transparent_34%)]',
+    mutedText: 'text-slate-500',
+    sectionBorder: 'border-black/[0.06]',
+    shell:
+      'border-black/[0.1] bg-[#f7f2e8]/94 text-[#122033] shadow-[0_24px_56px_-24px_rgba(15,23,42,0.34),inset_0_1px_0_rgba(255,255,255,0.82)]',
+    strongText: 'text-slate-950',
+    subText: 'text-slate-700',
+  },
 }
 
 /* ------------------------------------------------------------------ */
@@ -165,12 +186,34 @@ function matchShortcut(e: KeyboardEvent, shortcut: string): boolean {
 }
 
 function formatShortcutLabel(shortcut: string): string {
-  return shortcut
-    .split('+')
-    .map((p) =>
-      p.length <= 1 ? p.toUpperCase() : p[0].toUpperCase() + p.slice(1)
-    )
-    .join(' + ')
+  const parts = shortcut.toLowerCase().split('+')
+  const key = parts.at(-1) ?? ''
+  const mods = parts.slice(0, -1)
+  const symbols: Record<string, string> = {
+    alt: '\u2325',
+    ctrl: '\u2303',
+    meta: '\u2318',
+    shift: '\u21E7',
+  }
+  const keySymbols: Record<string, string> = {
+    arrowdown: '\u2193',
+    arrowleft: '\u2190',
+    arrowright: '\u2192',
+    arrowup: '\u2191',
+    enter: '\u23CE',
+    escape: 'Esc',
+    space: '\u2423',
+    tab: '\u21E5',
+  }
+
+  const prefix = mods
+    .map((part) => symbols[part] ?? part.toUpperCase())
+    .join('')
+  const keyLabel =
+    keySymbols[key] ??
+    (key.length === 1 ? key.toUpperCase() : key[0].toUpperCase() + key.slice(1))
+
+  return `${prefix}${keyLabel}`
 }
 
 function injectStyleOnce(id: string, css: string): void {
@@ -189,6 +232,43 @@ function setAttr(name: string, on: boolean): void {
   }
 }
 
+function formatMetricLabel(label: string): string {
+  const explicit: Record<string, string> = {
+    breakpoint: 'Breakpoint',
+    connection: 'Connection',
+    contrast: 'Contrast',
+    'dom nodes': 'DOM Nodes',
+    dpr: 'DPR',
+    focus: 'Focus',
+    fps: 'FPS',
+    fullscreen: 'Fullscreen',
+    heap: 'Heap',
+    hover: 'Hover',
+    invert: 'Invert',
+    load: 'Page Load',
+    locale: 'Locale',
+    motion: 'Motion',
+    online: 'Online',
+    orient: 'Orientation',
+    pointer: 'Pointer',
+    'safe area': 'Safe Area',
+    'save data': 'Save Data',
+    scheme: 'Scheme',
+    scroll: 'Scroll',
+    scrollbar: 'Scrollbar',
+    standalone: 'Standalone',
+    theme: 'Theme',
+    timezone: 'Time Zone',
+    transparency: 'Transparency',
+    visible: 'Visible',
+    'visual vp': 'Visual VP',
+  }
+
+  if (explicit[label]) return explicit[label]
+
+  return label.replace(/\b\w/g, (char) => char.toUpperCase())
+}
+
 /* ------------------------------------------------------------------ */
 /*  KV Row + Section Builder                                          */
 /* ------------------------------------------------------------------ */
@@ -198,7 +278,8 @@ type KvRow = { key: string; label: string; title: string; value: ReactNode }
 function buildSections(
   d: DevPanelDiagnostics,
   f: Set<DevPanelFeature>,
-  items: DevPanelItem[]
+  items: DevPanelItem[],
+  panelTheme: PanelTheme
 ): { rows: KvRow[]; title: string }[] {
   const out: { rows: KvRow[]; title: string }[] = []
   const push = (title: string, rows: KvRow[]) => {
@@ -209,28 +290,28 @@ function buildSections(
   if (f.has('perf'))
     perf.push({
       key: 'fps',
-      label: 'fps',
+      label: 'FPS',
       title: 'Estimated frames per second (rAF)',
       value: d.fpsSampled ? String(d.fps) : '\u2026',
     })
   if (f.has('memory'))
     perf.push({
       key: 'heap',
-      label: 'heap',
+      label: 'Heap',
       title: 'Chrome performance.memory used (MB)',
       value: d.heapUsedMb == null ? 'n/a' : `${d.heapUsedMb} MB`,
     })
   if (f.has('domCount'))
     perf.push({
       key: 'dom',
-      label: 'dom nodes',
+      label: 'DOM Nodes',
       title: 'document.querySelectorAll("*").length',
       value: d.domNodeCount > 0 ? String(d.domNodeCount) : '\u2026',
     })
   if (f.has('timing'))
     perf.push({
       key: 'load',
-      label: 'page load',
+      label: 'Page Load',
       title: 'Navigation Timing API: loadEventEnd',
       value: d.pageLoadMs != null ? `${d.pageLoadMs} ms` : '\u2026',
     })
@@ -240,7 +321,7 @@ function buildSections(
   if (f.has('scroll'))
     layout.push({
       key: 'scroll',
-      label: 'scroll',
+      label: 'Scroll',
       title: 'window.scrollY / documentElement.scrollHeight',
       value: `${d.scrollY} / ${d.scrollHeight}`,
     })
@@ -248,7 +329,7 @@ function buildSections(
     const sum = d.safeTop + d.safeRight + d.safeBottom + d.safeLeft
     layout.push({
       key: 'safe',
-      label: 'safe area',
+      label: 'Safe Area',
       title: 'env(safe-area-inset-*)',
       value:
         sum === 0
@@ -259,21 +340,21 @@ function buildSections(
   if (f.has('visualViewport'))
     layout.push({
       key: 'vvp',
-      label: 'visual vp',
+      label: 'Visual VP',
       title: 'visualViewport dimensions and scale',
       value: `${d.vvWidth}\u00d7${d.vvHeight} @${d.vvScale}`,
     })
   if (f.has('scrollbar'))
     layout.push({
       key: 'sb',
-      label: 'scrollbar',
+      label: 'Scrollbar',
       title: 'innerWidth minus clientWidth',
       value: String(d.scrollbarWidth),
     })
   if (f.has('orientation'))
     layout.push({
       key: 'orient',
-      label: 'orient',
+      label: 'Orientation',
       title: 'screen.orientation or aspect',
       value: d.orientation,
     })
@@ -283,28 +364,28 @@ function buildSections(
   if (f.has('colorScheme'))
     display.push({
       key: 'scheme',
-      label: 'scheme',
-      title: 'prefers-color-scheme vs resolved theme',
-      value: `${d.prefersColorScheme} \u2192 ${d.resolvedTheme}`,
+      label: 'Scheme',
+      title: 'system preference -> page theme -> panel theme',
+      value: `${d.prefersColorScheme} \u2192 ${d.resolvedTheme} \u2192 ${panelTheme}`,
     })
   if (f.has('contrast'))
     display.push({
       key: 'contrast',
-      label: 'contrast',
+      label: 'Contrast',
       title: 'prefers-contrast',
       value: d.contrast,
     })
   if (f.has('reducedTransparency'))
     display.push({
       key: 'transparency',
-      label: 'transparency',
+      label: 'Transparency',
       title: 'prefers-reduced-transparency',
       value: d.reducedTransparency ? 'reduce' : 'ok',
     })
   if (f.has('inverted'))
     display.push({
       key: 'invert',
-      label: 'invert',
+      label: 'Invert',
       title: 'inverted-colors',
       value: d.invertedColors ? 'yes' : 'no',
     })
@@ -315,19 +396,19 @@ function buildSections(
     input.push(
       {
         key: 'motion',
-        label: 'motion',
+        label: 'Motion',
         title: 'prefers-reduced-motion',
         value: d.reducedMotion ? 'reduce' : 'ok',
       },
       {
         key: 'pointer',
-        label: 'pointer',
+        label: 'Pointer',
         title: 'pointer: coarse',
         value: d.pointerCoarse ? 'coarse' : 'fine',
       },
       {
         key: 'hover',
-        label: 'hover',
+        label: 'Hover',
         title: 'hover: hover',
         value: d.canHover ? 'yes' : 'no',
       }
@@ -336,7 +417,7 @@ function buildSections(
   if (f.has('dpr'))
     input.push({
       key: 'dpr',
-      label: 'dpr',
+      label: 'DPR',
       title: 'devicePixelRatio',
       value: String(d.dpr),
     })
@@ -346,21 +427,21 @@ function buildSections(
   if (f.has('online'))
     network.push({
       key: 'online',
-      label: 'online',
+      label: 'Online',
       title: 'navigator.onLine',
       value: d.online ? 'yes' : 'no',
     })
   if (f.has('connection'))
     network.push({
       key: 'conn',
-      label: 'connection',
+      label: 'Connection',
       title: 'Network Information API (effectiveType, downlink, rtt)',
       value: d.connectionSummary || 'unavailable',
     })
   if (f.has('saveData'))
     network.push({
       key: 'savedata',
-      label: 'save data',
+      label: 'Save Data',
       title: 'prefers-reduced-data',
       value: d.saveDataReduced ? 'reduce' : 'no',
     })
@@ -370,21 +451,21 @@ function buildSections(
   if (f.has('visibility'))
     runtime.push({
       key: 'visible',
-      label: 'visible',
+      label: 'Visible',
       title: 'document.visibilityState',
       value: d.visibility,
     })
   if (f.has('fullscreen'))
     runtime.push({
       key: 'fullscreen',
-      label: 'fullscreen',
+      label: 'Fullscreen',
       title: 'document.fullscreenElement',
       value: d.fullscreen ? 'yes' : 'no',
     })
   if (f.has('displayMode'))
     runtime.push({
       key: 'standalone',
-      label: 'standalone',
+      label: 'Standalone',
       title: 'display-mode: standalone',
       value: d.displayStandalone ? 'yes' : 'no',
     })
@@ -395,13 +476,13 @@ function buildSections(
     locale.push(
       {
         key: 'locale',
-        label: 'locale',
+        label: 'Locale',
         title: 'navigator.language',
         value: d.locale || 'unknown',
       },
       {
         key: 'tz',
-        label: 'timezone',
+        label: 'Time Zone',
         title: 'Intl time zone',
         value: d.timeZone || 'unknown',
       }
@@ -413,7 +494,7 @@ function buildSections(
     push('DOM', [
       {
         key: 'focus',
-        label: 'focus',
+        label: 'Focus',
         title: 'document.activeElement',
         value: d.focusPeek || '\u2014',
       },
@@ -421,7 +502,7 @@ function buildSections(
 
   const app: KvRow[] = items.map((item, i) => ({
     key: `app-${i}`,
-    label: item.label,
+    label: formatMetricLabel(item.label),
     title: item.title ?? '',
     value: item.value,
   }))
@@ -455,8 +536,8 @@ function DevPanelInner({
   const resolvedTheme = diagnostics.resolvedTheme
   const featureKey = devPanelFeaturesKey(features)
   const featureSet = useMemo(() => new Set(features), [featureKey])
-  const health = computeHealth(diagnostics, featureSet)
-  const healthColor = HEALTH_COLORS[health]
+  const panelTheme: PanelTheme = resolvedTheme === 'dark' ? 'light' : 'dark'
+  const themeClasses = PANEL_THEME_CLASSES[panelTheme]
 
   /* -- Overlay: Outline -- */
   useEffect(() => {
@@ -590,7 +671,7 @@ function DevPanelInner({
       .catch(() => {})
   }, [width, height, breakpoint, resolvedTheme, diagnostics])
 
-  const sections = buildSections(diagnostics, featureSet, items)
+  const sections = buildSections(diagnostics, featureSet, items, panelTheme)
   const hasTools =
     featureSet.has('outline') ||
     featureSet.has('grid') ||
@@ -598,8 +679,11 @@ function DevPanelInner({
     featureSet.has('focusRings') ||
     featureSet.has('noAnimations')
   const shortcutHint = formatShortcutLabel(shortcut)
-  const themeLabel =
+  const pageThemeLabel =
     resolvedTheme.charAt(0).toUpperCase() + resolvedTheme.slice(1)
+  const panelThemeLabel =
+    panelTheme.charAt(0).toUpperCase() + panelTheme.slice(1)
+  const networkLabel = diagnostics.online ? 'Online' : 'Offline'
 
   type ToolDef = {
     feature: DevPanelFeature
@@ -614,7 +698,7 @@ function DevPanelInner({
     featureSet.has('outline')
       ? {
           feature: 'outline' as DevPanelFeature,
-          icon: <Ico paths={ICO_OUTLINE} size={11} />,
+          icon: <Ico paths={ICO_OUTLINE} />,
           label: 'Outline',
           on: outlineOn,
           title: 'Outline every element',
@@ -624,7 +708,7 @@ function DevPanelInner({
     featureSet.has('grid')
       ? {
           feature: 'grid' as DevPanelFeature,
-          icon: <Ico paths={ICO_GRID} size={11} />,
+          icon: <Ico paths={ICO_GRID} />,
           label: 'Grid',
           on: gridOn,
           title: '8px grid overlay',
@@ -634,8 +718,8 @@ function DevPanelInner({
     featureSet.has('slowMo')
       ? {
           feature: 'slowMo' as DevPanelFeature,
-          icon: <Ico d={ICO_SLOW_MO} size={11} />,
-          label: 'Slow Mo',
+          icon: <Ico d={ICO_SLOW_MO} />,
+          label: 'Slow',
           on: slowMoOn,
           title: 'Slow all CSS transitions to 2s',
           toggle: () => setSlowMoOn((v) => !v),
@@ -644,7 +728,7 @@ function DevPanelInner({
     featureSet.has('focusRings')
       ? {
           feature: 'focusRings' as DevPanelFeature,
-          icon: <Ico paths={ICO_FOCUS_RING} size={11} />,
+          icon: <Ico paths={ICO_FOCUS_RING} />,
           label: 'Focus',
           on: focusRingsOn,
           title: 'Show visible focus rings',
@@ -654,8 +738,8 @@ function DevPanelInner({
     featureSet.has('noAnimations')
       ? {
           feature: 'noAnimations' as DevPanelFeature,
-          icon: <Ico paths={ICO_NO_ANIM} size={11} />,
-          label: 'No Anim',
+          icon: <Ico paths={ICO_NO_ANIM} />,
+          label: 'Freeze',
           on: noAnimOn,
           title: 'Disable all CSS animations',
           toggle: () => setNoAnimOn((v) => !v),
@@ -663,116 +747,221 @@ function DevPanelInner({
       : null,
   ].filter(Boolean) as ToolDef[]
 
+  const shellBase =
+    'origin-bottom-right relative overflow-hidden border backdrop-blur-2xl transition-[height,box-shadow,background-color,border-color] duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] [font-variant-numeric:tabular-nums]'
+  const toolOnClass = panelTheme === 'dark' ? 'text-sky-200' : 'text-sky-800'
+  const toolOffClass =
+    panelTheme === 'dark'
+      ? 'text-slate-400 hover:text-white'
+      : 'text-slate-500 hover:text-slate-950'
+
   return (
     <div
+      aria-expanded={open}
       aria-label='Development panel'
-      className='fixed bottom-4 right-4 z-[9999] flex flex-col items-end gap-2'
-      role='status'
+      className='fixed bottom-4 right-4 z-[9999] flex flex-col items-end'
+      onClick={open ? undefined : () => setOpen(true)}
+      onKeyDown={
+        open
+          ? undefined
+          : (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                setOpen(true)
+              }
+            }
+      }
+      role={open ? 'region' : 'button'}
+      tabIndex={open ? undefined : 0}
+      title={open ? undefined : `Dev panel (${shortcutHint})`}
     >
-      {/* ─── Expanded card ─── */}
-      {open && (
-        <div className='w-72 overflow-hidden rounded-xl border border-white/[0.07] bg-zinc-900/95 shadow-2xl shadow-black/60 backdrop-blur-xl'>
-          {/* Header */}
-          <div className='flex items-center justify-between border-b border-white/[0.06] px-3 py-2'>
-            <div className='flex items-center gap-2'>
-              <span
-                aria-hidden
-                className='h-1.5 w-1.5 shrink-0 rounded-full'
-                style={{
-                  background: healthColor,
-                  boxShadow: `0 0 6px ${healthColor}88`,
-                }}
-              />
-              <span className='text-[10px] font-bold uppercase tracking-widest text-slate-500'>
-                Dev
-              </span>
-            </div>
-            <div className='flex items-center gap-0.5'>
-              <button
-                className='rounded-md p-1.5 text-slate-500 transition-colors hover:bg-white/[0.06] hover:text-slate-200'
-                onClick={copyDiagnostics}
-                title={copied ? 'Copied!' : 'Copy diagnostics as JSON'}
-                type='button'
-              >
-                <Ico d={copied ? ICO_CHECK : ICO_COPY} size={12} />
-              </button>
-              <button
-                className='rounded-md p-1.5 text-slate-500 transition-colors hover:bg-white/[0.06] hover:text-slate-200'
-                onClick={() => setOpen(false)}
-                title='Collapse'
-                type='button'
-              >
-                <svg
-                  className='block'
-                  fill='none'
-                  height={12}
-                  stroke='currentColor'
-                  strokeLinecap='round'
-                  strokeWidth={2.5}
-                  viewBox='0 0 24 24'
-                  width={12}
+      <div
+        className={`${shellBase} ${themeClasses.shell} ${
+          open
+            ? 'h-[min(27rem,calc(100vh-2rem))] w-[min(19rem,calc(100vw-2rem))] rounded-[1.1rem]'
+            : 'h-10 w-[min(19rem,calc(100vw-2rem))] rounded-[0.95rem]'
+        }`}
+        role='presentation'
+        style={{
+          fontFamily:
+            'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif',
+        }}
+      >
+        <div
+          aria-hidden
+          className={`pointer-events-none absolute inset-0 ${themeClasses.glow}`}
+        />
+        <div className='relative flex h-full flex-col'>
+          <div
+            className={`flex items-center gap-2 px-3 ${
+              open ? `border-b ${themeClasses.divider}` : ''
+            }`}
+            style={{ height: '2.5rem' }}
+          >
+            <span
+              aria-hidden
+              className='h-1.5 w-1.5 shrink-0 rounded-full bg-gradient-to-br from-amber-300 via-orange-200 to-sky-300 shadow-[0_0_10px_rgba(251,191,36,0.38)]'
+            />
+
+            <div className='min-w-0 flex-1 overflow-hidden'>
+              <div className='flex items-center gap-1.5 overflow-hidden whitespace-nowrap'>
+                <span
+                  className={`font-mono text-[11px] font-semibold ${themeClasses.strongText}`}
+                  title='Viewport'
                 >
-                  <path d='M18 6L6 18M6 6l12 12' />
-                </svg>
-              </button>
+                  {width}
+                  {'\u00d7'}
+                  {height}
+                </span>
+                <span aria-hidden className={themeClasses.mutedText}>
+                  ·
+                </span>
+                <span
+                  className={`font-mono text-[10px] font-semibold tracking-[0.08em] ${themeClasses.subText}`}
+                  title='Breakpoint'
+                >
+                  {breakpoint.toUpperCase()}
+                </span>
+                <span aria-hidden className={themeClasses.mutedText}>
+                  ·
+                </span>
+                <span
+                  className={`text-[10px] font-medium ${themeClasses.subText}`}
+                  title={`Panel theme: ${panelThemeLabel} (page: ${pageThemeLabel})`}
+                >
+                  {panelThemeLabel}
+                </span>
+                <span aria-hidden className={themeClasses.mutedText}>
+                  ·
+                </span>
+                <span
+                  className={`inline-flex items-center gap-1 text-[10px] font-medium ${
+                    diagnostics.online
+                      ? panelTheme === 'dark'
+                        ? 'text-emerald-300'
+                        : 'text-emerald-800'
+                      : panelTheme === 'dark'
+                        ? 'text-rose-300'
+                        : 'text-rose-800'
+                  }`}
+                  title='navigator.onLine'
+                >
+                  <span
+                    aria-hidden
+                    className={`h-1.5 w-1.5 rounded-full ${
+                      diagnostics.online ? 'bg-emerald-400' : 'bg-rose-400'
+                    }`}
+                  />
+                  {networkLabel}
+                </span>
+              </div>
             </div>
-          </div>
 
-          {/* Core metrics (always shown) */}
-          <div className='space-y-0.5 border-b border-white/[0.06] px-3 py-2'>
-            <div className='flex items-baseline justify-between py-0.5'>
-              <span className='text-[11px] font-medium text-slate-500'>
-                viewport
-              </span>
-              <span className='font-mono text-[11px] font-bold tabular-nums text-slate-200'>
-                {width}
-                {'\u00d7'}
-                {height}
-              </span>
-            </div>
-            <div className='flex items-baseline justify-between py-0.5'>
-              <span className='text-[11px] font-medium text-slate-500'>
-                breakpoint
-              </span>
-              <span className='font-mono text-[11px] font-bold uppercase tabular-nums text-slate-200'>
-                {breakpoint.toUpperCase()}
-              </span>
-            </div>
-            <div
-              className='flex items-baseline justify-between py-0.5'
-              title={`Theme: ${themeLabel}`}
+            <button
+              className={`shrink-0 rounded-md p-1.5 ${themeClasses.mutedText} transition-colors ${themeClasses.buttonHover}`}
+              onClick={(e) => {
+                e.stopPropagation()
+                copyDiagnostics()
+              }}
+              title={copied ? 'Copied!' : 'Copy diagnostics as JSON'}
+              type='button'
             >
-              <span className='text-[11px] font-medium text-slate-500'>
-                theme
-              </span>
-              <span className='font-mono text-[11px] font-bold text-slate-200'>
-                {themeLabel}
-              </span>
-            </div>
+              <Ico d={copied ? ICO_CHECK : ICO_COPY} size={13} />
+            </button>
+
+            <button
+              aria-expanded={open}
+              className={`shrink-0 rounded-md p-1.5 ${themeClasses.mutedText} transition-colors ${themeClasses.buttonHover}`}
+              onClick={(e) => {
+                e.stopPropagation()
+                setOpen((value) => !value)
+              }}
+              title={open ? 'Collapse' : `Dev panel (${shortcutHint})`}
+              type='button'
+            >
+              <svg
+                className={`block transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                  open ? 'rotate-180' : ''
+                }`}
+                fill='none'
+                height={14}
+                stroke='currentColor'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                strokeWidth={2}
+                viewBox='0 0 24 24'
+                width={14}
+              >
+                <path d='M7 10l5 5 5-5' />
+              </svg>
+            </button>
           </div>
 
-          {/* Diagnostic sections */}
-          {sections.length > 0 && (
-            <div className='dp-scroll max-h-64 space-y-3 overflow-y-auto px-3 py-2'>
+          <div
+            aria-hidden={!open}
+            className={`min-h-0 flex flex-1 flex-col overflow-hidden transition-[opacity,transform] duration-220 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+              open
+                ? 'translate-y-0 opacity-100'
+                : 'pointer-events-none translate-y-1.5 opacity-0'
+            }`}
+          >
+            {hasTools && tools.length > 0 && (
+              <div
+                className={`flex flex-wrap items-center gap-x-3 gap-y-1 border-b px-3 py-2 ${themeClasses.divider}`}
+              >
+                {tools.map((tool) => (
+                  <button
+                    key={tool.feature}
+                    aria-pressed={tool.on}
+                    className={`inline-flex items-center gap-1.5 text-[11px] font-medium transition-colors ${
+                      tool.on ? toolOnClass : toolOffClass
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      tool.toggle()
+                    }}
+                    title={tool.title}
+                    type='button'
+                  >
+                    {tool.icon}
+                    <span>{tool.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div className='dp-scroll min-h-0 flex-1 overflow-y-auto px-3 py-2'>
               {sections.map((section, idx) => (
                 <div key={section.title}>
                   {idx > 0 && (
-                    <div className='-mx-3 mb-2.5 border-t border-white/[0.04]' />
+                    <div
+                      className={`mb-2 mt-2 border-t ${themeClasses.sectionBorder}`}
+                    />
                   )}
-                  <div className='mb-1.5 text-[9px] font-bold uppercase tracking-widest text-slate-600'>
+                  <div
+                    className={`mb-1 text-[10px] font-semibold uppercase tracking-[0.14em] ${themeClasses.mutedText}`}
+                  >
                     {section.title}
                   </div>
-                  <div className='space-y-0.5'>
-                    {section.rows.map((row) => (
+                  <div>
+                    {section.rows.map((row, rowIndex) => (
                       <div
                         key={row.key}
-                        className='flex items-baseline justify-between py-0.5'
+                        className={`flex items-center justify-between gap-3 py-1.5 ${
+                          rowIndex > 0
+                            ? `border-t ${themeClasses.sectionBorder}`
+                            : ''
+                        }`}
                         title={row.title}
                       >
-                        <span className='shrink-0 text-[11px] font-medium text-slate-500'>
+                        <span
+                          className={`min-w-0 text-[11px] font-medium ${themeClasses.mutedText}`}
+                        >
                           {row.label}
                         </span>
-                        <span className='overflow-hidden text-ellipsis whitespace-nowrap font-mono text-[11px] font-bold tabular-nums text-slate-200'>
+                        <span
+                          className={`min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-right font-mono text-[11px] font-semibold ${themeClasses.strongText}`}
+                        >
                           {row.value}
                         </span>
                       </div>
@@ -780,95 +969,25 @@ function DevPanelInner({
                   </div>
                 </div>
               ))}
-            </div>
-          )}
 
-          {/* Slot */}
-          {children && (
-            <div className='border-t border-white/[0.06] px-3 py-2'>
-              <div className='mb-1.5 text-[9px] font-bold uppercase tracking-widest text-slate-600'>
-                Slot
-              </div>
-              <div className='text-[11px] text-slate-400'>{children}</div>
-            </div>
-          )}
-
-          {/* Tools */}
-          {hasTools && tools.length > 0 && (
-            <div className='border-t border-white/[0.06] px-3 py-2'>
-              <div className='mb-1.5 text-[9px] font-bold uppercase tracking-widest text-slate-600'>
-                Tools
-              </div>
-              <div className='flex flex-wrap gap-1.5'>
-                {tools.map((tool) => (
-                  <button
-                    key={tool.feature}
-                    aria-pressed={tool.on}
-                    className={`flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] font-semibold transition-colors ${
-                      tool.on
-                        ? 'border-blue-500/30 bg-blue-500/20 text-blue-300'
-                        : 'border-white/[0.08] bg-white/5 text-slate-400 hover:bg-white/[0.08] hover:text-slate-200'
-                    }`}
-                    onClick={tool.toggle}
-                    title={tool.title}
-                    type='button'
+              {children && (
+                <div
+                  className={`mt-2 border-t pt-2 ${themeClasses.sectionBorder}`}
+                >
+                  <div
+                    className={`mb-1 text-[10px] font-semibold uppercase tracking-[0.14em] ${themeClasses.mutedText}`}
                   >
-                    {tool.icon}
-                    {tool.label}
-                  </button>
-                ))}
-              </div>
+                    Slot
+                  </div>
+                  <div className={`text-[11px] ${themeClasses.subText}`}>
+                    {children}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-
-          {/* Footer: shortcut hint */}
-          <div className='border-t border-white/[0.04] px-3 py-1.5'>
-            <span className='font-mono text-[9px] tracking-wider text-slate-700'>
-              {shortcutHint}
-            </span>
           </div>
         </div>
-      )}
-
-      {/* ─── Collapsed pill ─── */}
-      {!open && (
-        <button
-          className='flex cursor-pointer select-none items-center gap-1.5 rounded-full border border-white/[0.08] bg-zinc-900/90 py-1.5 pl-2.5 pr-3 backdrop-blur-lg transition-colors hover:bg-zinc-800/90'
-          onClick={() => setOpen(true)}
-          title={`Dev panel (${shortcutHint})`}
-          type='button'
-        >
-          <span
-            aria-hidden
-            className='h-1.5 w-1.5 shrink-0 rounded-full'
-            style={{
-              background: healthColor,
-              boxShadow: `0 0 5px ${healthColor}88`,
-            }}
-          />
-          <span className='font-mono text-[11px] font-bold tabular-nums text-slate-200'>
-            {width}
-            {'\u00d7'}
-            {height}
-          </span>
-          <span className='text-[11px] text-slate-600'>·</span>
-          <span className='font-mono text-[11px] font-bold uppercase text-slate-300'>
-            {breakpoint.toUpperCase()}
-          </span>
-          <span className='text-[11px] text-slate-600'>·</span>
-          <span className='font-mono text-[11px] text-slate-300'>
-            {themeLabel}
-          </span>
-          {featureSet.has('perf') && diagnostics.fpsSampled && (
-            <>
-              <span className='text-[11px] text-slate-600'>·</span>
-              <span className='font-mono text-[11px] tabular-nums text-slate-300'>
-                {diagnostics.fps}fps
-              </span>
-            </>
-          )}
-        </button>
-      )}
+      </div>
     </div>
   )
 }
