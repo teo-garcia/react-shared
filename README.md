@@ -9,6 +9,7 @@ teo-garcia template portfolio**
 [![npm](https://img.shields.io/npm/v/@teo-garcia/react-shared?color=blue)](https://www.npmjs.com/package/@teo-garcia/react-shared)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 
 Part of the [@teo-garcia/templates](https://github.com/teo-garcia/templates)
 ecosystem
@@ -19,10 +20,13 @@ ecosystem
 
 ## Overview
 
-Zero-dependency (aside from `clsx` and `tailwind-merge`) collection of React
-primitives designed for the teo-garcia template portfolio. Every export is
-tree-shakeable, SSR-safe, and typed. No Tailwind required for any component;
-inline styles are used throughout.
+Collection of React primitives designed for the teo-garcia template portfolio.
+Every export is tree-shakeable, SSR-safe, and typed.
+
+**Tailwind CSS 4 is required.** Components use Tailwind utility classes at
+runtime — no inline-style fallback. Consumers must have Tailwind configured and
+must add this package's source files to their content scan so generated classes
+are included in the output.
 
 ---
 
@@ -125,7 +129,9 @@ dependencies.
 ## DevPanel
 
 Development-only floating overlay that surfaces viewport, breakpoint, theme, and
-configurable diagnostics. Features beyond what Chrome DevTools provides:
+configurable diagnostics. Returns `null` in production builds.
+
+### Features
 
 - Tailwind breakpoint indicator
 - Theme detection (class, data attribute, system preference)
@@ -135,14 +141,61 @@ configurable diagnostics. Features beyond what Chrome DevTools provides:
 - FPS counter and heap memory (Chrome only)
 - Active element peek
 - Network connection quality
-- Element outline and 8px grid overlays
-- Column overlay cycle (`3`, `6`, `9`, `12`, `24`, `48`)
+- Element outline overlay
+- **Baseline overlay** — toggleable 8px grid
+- **Column overlay** — cycles through `2`, `3`, `4`, `6`, `8`, `12` columns with
+  gutter spacing
 - Custom app-specific items via the `items` prop
 - Copy diagnostics as JSON
-- Health status indicator (green, yellow, red)
-- Keyboard toggle (Shift + D by default)
+- Keyboard toggle (`Shift+D` by default)
 
-Returns `null` in production builds.
+### API
+
+| Export                   | Kind      | Description                                               |
+| ------------------------ | --------- | --------------------------------------------------------- |
+| `DevPanel`               | Component | The panel itself                                          |
+| `ALL_DEV_PANEL_FEATURES` | Constant  | Full feature set; default when `features` prop is omitted |
+| `DevPanelProps`          | Type      | Component prop types                                      |
+| `DevPanelFeature`        | Type      | Union of all valid feature keys                           |
+| `DevPanelColsMode`       | Type      | `'off' \| '2' \| '3' \| '4' \| '6' \| '8' \| '12'`        |
+| `DevPanelItem`           | Type      | Shape for custom `items` entries                          |
+
+### Features
+
+`DevPanelFeature` controls which diagnostics and overlays are registered. Pass a
+subset to `features` to opt in selectively:
+
+| Key                   | Category    | Description                          |
+| --------------------- | ----------- | ------------------------------------ |
+| `baseline`            | Overlay     | 8px baseline grid toggle             |
+| `cols`                | Overlay     | Column grid overlay (cycles 2–12)    |
+| `outline`             | Overlay     | Red outline on every DOM element     |
+| `slowMo`              | Overlay     | Slows all CSS transitions to 2s      |
+| `focusRings`          | Overlay     | Makes focus rings always visible     |
+| `noAnimations`        | Overlay     | Disables all CSS animations          |
+| `colorScheme`         | Display     | System preference and resolved theme |
+| `contrast`            | Display     | `prefers-contrast` value             |
+| `reducedTransparency` | Display     | `prefers-reduced-transparency` value |
+| `inverted`            | Display     | `inverted-colors` value              |
+| `dpr`                 | Input       | `devicePixelRatio`                   |
+| `focus`               | Input       | Active element tag and role          |
+| `media`               | Input       | Pointer type and hover capability    |
+| `online`              | Network     | `navigator.onLine`                   |
+| `connection`          | Network     | Network Information API summary      |
+| `saveData`            | Network     | `prefers-reduced-data` value         |
+| `perf`                | Performance | FPS, JS heap, and page load timing   |
+| `domCount`            | Runtime     | Live DOM node count                  |
+| `memory`              | Runtime     | JS heap size (Chrome only)           |
+| `timing`              | Runtime     | Navigation timing metrics            |
+| `visibility`          | Runtime     | `document.visibilityState`           |
+| `displayMode`         | Runtime     | PWA display mode                     |
+| `fullscreen`          | Runtime     | Fullscreen state                     |
+| `locale`              | Locale      | Language and timezone                |
+| `scroll`              | Layout      | Scroll position vs. document height  |
+| `safeArea`            | Layout      | Safe area insets                     |
+| `scrollbar`           | Layout      | Scrollbar width                      |
+| `visualViewport`      | Layout      | Visual viewport size and scale       |
+| `orientation`         | Layout      | Screen orientation                   |
 
 ---
 
@@ -163,9 +216,8 @@ Or from the package root:
 pnpm dev:playground
 ```
 
-The playground is intentionally minimal and focused on `DevPanel`. It aliases
-`@teo-garcia/react-shared` to local `src/`, so edits inside
-`src/components/dev-panel/*` hot-reload immediately.
+The playground aliases `@teo-garcia/react-shared` to local `src/`, so edits
+inside `src/` hot-reload immediately.
 
 ---
 
@@ -174,6 +226,7 @@ The playground is intentionally minimal and focused on `DevPanel`. It aliases
 - React 19+
 - TypeScript 5+
 - Node.js 24+
+- Tailwind CSS 4+ (consumer must include this package in the content scan)
 
 ---
 
