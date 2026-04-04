@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@teo-garcia/ts-core':
+        specifier: ^0.1.1
+        version: 0.1.1
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -349,6 +352,10 @@ packages:
     engines: {node: '>=24'}
     peerDependencies:
       prettier: ^3.0.0
+
+  '@teo-garcia/ts-core@0.1.1':
+    resolution: {integrity: sha512-lhqRmPUtJkkchAzWMfhcNViq5HI/Tn2dxMb7stZ/S/1Iuyh/Z55Rpp3+8OMNYnEu4nVEhpf6/rAS8XySbef9cA==}
+    engines: {node: '>=24'}
 
   '@testing-library/dom@10.4.1':
     resolution: {integrity: sha512-o4PXJQidqJl82ckFaXUeoAW+XysPLauYI43Abki5hABd853iMhitooc6znOnczgbTYmEP6U6/y1ZyKAIsvMKGg==}
@@ -1417,6 +1424,8 @@ snapshots:
   '@teo-garcia/prettier-config-shared@0.2.9(prettier@3.6.2)':
     dependencies:
       prettier: 3.6.2
+
+  '@teo-garcia/ts-core@0.1.1': {}
 
   '@testing-library/dom@10.4.1':
     dependencies:
