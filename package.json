@@ -397,7 +397,7 @@
     "@types/node": "^24.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^5.0.4",
+    "@vitejs/plugin-react": "^6.0.0",
     "happy-dom": "^20.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.3",
