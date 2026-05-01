@@ -366,7 +366,7 @@
     "url": "git+https://github.com/teo-garcia/react-shared.git"
   },
   "prettier": "@teo-garcia/prettier-config-shared",
-  "packageManager": "pnpm@10.2.0",
+  "packageManager": "pnpm@10.33.2",
   "engines": {
     "node": ">=24"
   },
