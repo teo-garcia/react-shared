@@ -392,7 +392,7 @@
   "devDependencies": {
     "@tanstack/react-query": "^5.0.0",
     "@teo-garcia/prettier-config-shared": "^0.2.9",
-    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/jest-dom": "^7.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/node": "^24.0.0",
     "@types/react": "^19.0.0",
