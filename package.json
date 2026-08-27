@@ -400,7 +400,7 @@
     "@vitejs/plugin-react": "^6.0.0",
     "happy-dom": "^20.0.0",
     "husky": "^9.1.7",
-    "lint-staged": "^16.2.3",
+    "lint-staged": "^17.0.0",
     "prettier": "^3.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
