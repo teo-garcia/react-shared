@@ -1,25 +1,5 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
-  "dependencyDashboard": true,
-  "labels": ["dependencies"],
-  "platformAutomerge": true,
-  "packageRules": [
-    {
-      "groupName": "teo-garcia shared configs",
-      "schedule": ["on the first day of the month"],
-      "automerge": false,
-      "reviewers": ["teo-garcia"],
-      "matchPackageNames": ["/^@teo-garcia//"]
-    },
-    {
-      "groupName": "all dependencies",
-      "matchUpdateTypes": ["minor", "patch"],
-      "excludePackagePatterns": ["^@teo-garcia/"],
-      "schedule": ["on the first day of the month"],
-      "minimumReleaseAge": "3 days",
-      "automerge": true,
-      "automergeType": "pr"
-    }
-  ]
+  "description": "Dependency automation is disabled for this archived repository",
+  "enabled": false
 }
